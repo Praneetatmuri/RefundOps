@@ -8,6 +8,10 @@ import glob
 from collections import deque
 import threading
 import time
+import database
+
+# Initialize DB
+database.init_db()
 
 app = FastAPI()
 
@@ -16,8 +20,17 @@ ears_process = None
 log_buffer = deque(maxlen=200)  # Store last 200 log lines
 
 class LoginCredentials(BaseModel):
-    email: str
+    # This now effectively acts as "username" and "password" for the dashboard
+    # But for backward compatibility with the frontend field names, we might keep email/password
+    # OR better, we use username/password
+    username: str
     password: str
+
+class SignUpCredentials(BaseModel):
+    username: str
+    password: str
+    gmail_email: str
+    gmail_app_pass: str
 
 def read_process_output(process):
     """
@@ -33,20 +46,44 @@ def read_process_output(process):
     except Exception as e:
         log_buffer.append(f"LOGGING ERROR: {e}")
 
+@app.post("/signup")
+def signup(credentials: SignUpCredentials):
+    success, msg = database.create_user(
+        credentials.username, 
+        credentials.password, 
+        credentials.gmail_email, 
+        credentials.gmail_app_pass
+    )
+    if success:
+        return {"status": "success", "message": "User created successfully"}
+    else:
+        raise HTTPException(status_code=400, detail=msg)
+
 @app.post("/login")
 def login(credentials: LoginCredentials):
     """
-    Updates the config.py file with new credentials.
+    Verifies user against DB. If valid, updates config.py with their stored Gmail creds.
     """
+    print(f"LOGIN ATTEMPT: Username='{credentials.username}'", flush=True)
+    valid, gmail, app_pass = database.verify_user(credentials.username, credentials.password)
+    
+    if not valid:
+        print(f"LOGIN FAILED: Invalid credentials for '{credentials.username}'", flush=True)
+        # Fallback for "legacy" mode where user might just be typing raw gmail/pass?
+        # Only if it looks like an email and 16 char pass. But let's enforce DB for new flow.
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    print(f"LOGIN SUCCESS: '{credentials.username}'", flush=True)
+
     try:
-        config_content = f'''# --- CONFIGURATION ---
-EMAIL_USER = "{credentials.email}"
-EMAIL_PASS = "{credentials.password}"
+        config_content = f'''# --- CONFIGURATION (Auto-generated for {credentials.username}) ---
+EMAIL_USER = "{gmail}"
+EMAIL_PASS = "{app_pass}"
 IMAP_SERVER = "imap.gmail.com"
 '''
         with open("config.py", "w") as f:
             f.write(config_content)
-        return {"status": "success", "message": "Credentials updated successfully"}
+        return {"status": "success", "message": "Login successful"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -60,6 +97,10 @@ def get_status():
 @app.get("/logs")
 def get_logs():
     return {"logs": list(log_buffer)}
+
+@app.get("/stats")
+def get_stats_endpoint():
+    return database.get_stats()
 
 @app.post("/start")
 def start_ears():

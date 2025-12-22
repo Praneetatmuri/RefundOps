@@ -1,13 +1,20 @@
 import google.generativeai as genai
 import json
+import os
+from dotenv import load_dotenv
 
-# --- PASTE YOUR GOOGLE API KEY HERE ---
-GOOGLE_API_KEY = "AIzaSyDhnvlksy3gth7einKjs6AV1pKIgTFqRFQ"
+# Load environment variables from .env
+load_dotenv()
+
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+
+if not GOOGLE_API_KEY:
+    print("ERROR: GOOGLE_API_KEY not found in environment variables!")
 
 genai.configure(api_key=GOOGLE_API_KEY)
         # Using Gemini 2.0 Flash (Free & Fast)
 model = genai.GenerativeModel(
-    'models/gemini-2.5-flash-lite',
+    'models/gemini-2.5-flash',
     generation_config={"response_mime_type": "application/json"}
 )
 
@@ -22,12 +29,14 @@ def get_flight_data(email_text):
     Required format (must be an object, not an array):
     {{
         "pnr": "ABC123",
-        "airline": "Air India"
+        "airline": "Air India",
+        "customer_name": "John Doe"
     }}
     
     Fields to extract:
     - pnr (string) -> The booking reference (usually 6 chars)
     - airline (string) -> Example: "Indigo", "Air India", "Vistara"
+    - customer_name (string) -> The full name of the passenger/customer
     
     Email Text:
     "{email_text}"
