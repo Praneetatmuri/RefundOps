@@ -1,4 +1,8 @@
-# ✈️ RefundOps - Automated Flight Refund Processing System
+# ✈️ RefundOps
+
+### *Transforming Hours of Manual Work into Seconds of Automation*
+
+**Your AI-Powered Copilot for Seamless Flight Refund Processing**
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.8+-blue.svg" alt="Python Version">
@@ -128,8 +132,8 @@ RefundOps automates the entire refund workflow:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Praneetatmuri/RefundOps-for-techhack.git
-   cd RefundOps-for-techhack
+   git clone https://github.com/Praneetatmuri/RefundOps.git
+   cd RefundOps
    ```
 
 2. **Install dependencies**
@@ -246,7 +250,7 @@ RefundOps tracks:
 
 ## 📝 License
 
-This project was created for **TechHack 2024** hackathon.
+This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
