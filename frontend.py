@@ -405,32 +405,42 @@ else:
     with main_col_2:
         st.subheader("📸 Live Evidence")
         
-        # Create a container for the gallery
-        gallery_container = st.container()
+        # Create a placeholder for the gallery that we can update
+        gallery_placeholder = st.empty()
         
-        try:
-            res = requests.get(f"{BACKEND_URL}/screenshots")
-            if res.status_code == 200:
-                images = res.json().get("screenshots", [])
-                if images:
-                    # Show latest large
-                    st.image(images[0], caption="Latest Activity", use_container_width=True)
-                    
-                    # Show thumbnails needed? Maybe just list recent ones in an expander
-                    if len(images) > 1:
-                        with st.expander("Recent History"):
-                            hist_cols = st.columns(3)
-                            for idx, img_path in enumerate(images[1:7]): # Show max 6 more
-                                with hist_cols[idx % 3]:
-                                    st.image(img_path, caption=img_path, use_container_width=True)
-                else:
-                    st.markdown("""
-                    <div style="height: 400px; border: 2px dashed #30363d; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #6e7681;">
-                        <div style="text-align: center;">
-                            <span style="font-size: 48px;">📷</span><br>
-                            No screenshots captured yet
+        # Function to render gallery
+        def render_gallery():
+            try:
+                res = requests.get(f"{BACKEND_URL}/screenshots")
+                if res.status_code == 200:
+                    images = res.json().get("screenshots", [])
+                    if images:
+                        with gallery_placeholder.container():
+                            # Show latest large
+                            st.image(images[0], caption=f"Latest: {images[0]}", use_container_width=True)
+                            
+                            # Show thumbnails
+                            if len(images) > 1:
+                                with st.expander("Recent History", expanded=True):
+                                    hist_cols = st.columns(3)
+                                    for idx, img_path in enumerate(images[1:7]): # Show max 6 more
+                                        with hist_cols[idx % 3]:
+                                            st.image(img_path, caption=img_path, use_container_width=True)
+                    else:
+                        gallery_placeholder.markdown("""
+                        <div style="height: 400px; border: 2px dashed #30363d; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #6e7681;">
+                            <div style="text-align: center;">
+                                <span style="font-size: 48px;">📷</span><br>
+                                No screenshots captured yet
+                            </div>
                         </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-        except Exception as e:
-            st.error(f"Gallery Error: {e}")
+                        """, unsafe_allow_html=True)
+            except Exception as e:
+                gallery_placeholder.error(f"Gallery Error: {e}")
+
+        # Initial Render
+        render_gallery()
+        
+        # Refresh button
+        if st.button("🔄 Refresh Gallery", use_container_width=True):
+            st.rerun()
