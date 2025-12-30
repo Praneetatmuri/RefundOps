@@ -245,7 +245,7 @@ RefundOps tracks:
 |---------|--------|
 | IndiGo (6E) | ✅ Supported |
 | Air India | ✅ Supported |
-| Vistara | 🔜 Coming Soon |
+| Akasa Air | 🔜 Coming Soon |
 | SpiceJet | 🔜 Coming Soon |
 
 ---
