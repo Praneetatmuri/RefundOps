@@ -23,6 +23,19 @@ def init_db():
             value INTEGER
         )
     ''')
+    # Bot State Table (For Human-in-the-Loop)
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS bot_state (
+            key TEXT PRIMARY KEY,
+            value TEXT,
+            payload TEXT
+        )
+    ''')
+    # Initialize 'current_action'
+    c.execute("INSERT OR IGNORE INTO bot_state (key, value, payload) VALUES ('current_action', 'IDLE', '{}')")
+
+
+
     # Initialize 'refund_count' if not exists
     c.execute("INSERT OR IGNORE INTO stats (key, value) VALUES ('refund_count', 0)")
     
@@ -83,4 +96,45 @@ def get_stats():
             "money_saved_inr": count * 4500   # Assume ₹4,500 per refund
         }
     except Exception as e:
-        return {"refunds_processed": 0, "time_saved_minutes": 0, "money_saved_usd": 0}
+        print(f"Stats Error: {e}")
+        return {"refunds_processed": 0, "time_saved_minutes": 0, "money_saved_inr": 0}
+
+# --- BOT STATE MANAGEMENT ---
+def set_bot_state(status, payload):
+    try:
+        conn = sqlite3.connect(DB_NAME)
+        c = conn.cursor()
+        import json
+        payload_str = json.dumps(payload)
+        c.execute("UPDATE bot_state SET value = ?, payload = ? WHERE key = 'current_action'", (status, payload_str))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"DB Error: {e}")
+        return False
+
+def get_bot_state():
+    try:
+        conn = sqlite3.connect(DB_NAME)
+        c = conn.cursor()
+        c.execute("SELECT value, payload FROM bot_state WHERE key = 'current_action'")
+        result = c.fetchone()
+        conn.close()
+        if result:
+            import json
+            return {"status": result[0], "payload": json.loads(result[1])}
+        return {"status": "IDLE", "payload": {}}
+    except Exception:
+        return {"status": "IDLE", "payload": {}}
+
+def set_user_decision(decision):
+    try:
+        current = get_bot_state()
+        payload = current.get("payload", {})
+        payload["decision"] = decision
+        set_bot_state(current["status"], payload)
+        return True
+    except:
+        return False
+

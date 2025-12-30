@@ -222,6 +222,24 @@ def get_metrics():
         return {}
     return {}
 
+def check_bot_state():
+    try:
+        res = requests.get(f"{BACKEND_URL}/bot-status")
+        if res.status_code == 200:
+            return res.json()
+    except:
+        return {}
+    return {}
+
+def submit_decision(decision):
+    try:
+        res = requests.post(f"{BACKEND_URL}/submit-decision", json={"decision": decision})
+        if res.status_code == 200:
+            return True
+    except:
+        return False
+    return False
+
 # --- PAGES ---
 
 if not st.session_state.logged_in:
@@ -369,6 +387,37 @@ else:
                 start_bot()
     
     st.markdown('</div>', unsafe_allow_html=True) # End glass card
+
+    st.markdown('</div>', unsafe_allow_html=True) # End glass card
+
+    st.markdown('</div>', unsafe_allow_html=True) # End glass card
+
+    # 2.5. AUTONOMOUS MONITOR (Replaces Manual Action)
+    bot_state = check_bot_state()
+    if bot_state.get("status") == "AUTONOMOUS_WORK":
+        payload = bot_state.get("payload", {})
+        status_msg = payload.get("status", "Processing...")
+        
+        st.markdown(f"""
+        <div class="glass-card" style="border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.1);">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="background: #3b82f6; padding: 10px; border-radius: 50%;">
+                    <span style="font-size: 24px;">🤖</span>
+                </div>
+                <div>
+                    <h3 style="margin: 0; color: #60a5fa;">Autonomous Agent Active</h3>
+                    <p style="margin: 0; color: #bfdbfe;">
+                        {status_msg}
+                    </p>
+                </div>
+            </div>
+            <div style="margin-top: 10px;">
+                <div style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
+                    <div style="width: 100%; height: 100%; background: #60a5fa; animation: loading 1.5s infinite;"></div>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     # 3. Main Content: Logs & Visuals
     

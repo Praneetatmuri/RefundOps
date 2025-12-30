@@ -30,13 +30,17 @@ def get_flight_data(email_text):
     {{
         "pnr": "ABC123",
         "airline": "Air India",
-        "customer_name": "John Doe"
+        "customer_name": "John Doe",
+        "origin": "Mumbai",
+        "destination": "Delhi"
     }}
     
     Fields to extract:
     - pnr (string) -> The booking reference (usually 6 chars)
     - airline (string) -> Example: "Indigo", "Air India", "Vistara"
     - customer_name (string) -> The full name of the passenger/customer
+    - origin (string) -> The city the flight departs from
+    - destination (string) -> The city the flight arrives at
     
     Email Text:
     "{email_text}"

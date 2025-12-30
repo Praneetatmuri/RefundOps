@@ -153,3 +153,22 @@ def get_screenshots():
     # Sort by modification time, newest first
     files.sort(key=os.path.getmtime, reverse=True)
     return {"screenshots": files}
+
+# --- NEW: HUMAN-IN-THE-LOOP API ---
+
+@app.get("/bot-status")
+def get_bot_status():
+    return database.get_bot_state()
+
+class DecisionModel(BaseModel):
+    decision: str # "REFUND_ONLY" or "HOLDBOOKING"
+
+@app.post("/submit-decision")
+def submit_decision(data: DecisionModel):
+    print(f"USER DECISION RECEIVED: {data.decision}", flush=True)
+    success = database.set_user_decision(data.decision)
+    if success:
+        return {"status": "success"}
+    raise HTTPException(status_code=500, detail="Failed to save decision")
+
+

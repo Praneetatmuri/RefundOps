@@ -44,14 +44,19 @@ def listen():
                             subject = msg["Subject"]
                             
                             # Extract Body
+                            body = ""
                             if msg.is_multipart():
                                 for part in msg.walk():
                                     if part.get_content_type() == "text/plain":
                                         body = part.get_payload(decode=True).decode()
-                                        print(f"Subject: {subject}", flush=True)
-                                        
-                                        # 3. TRIGGER THE AGENT
-                                        main.process_refund_email(body)
+                                        break
+                            else:
+                                body = msg.get_payload(decode=True).decode()
+                            
+                            if body:
+                                print(f"Subject: {subject}", flush=True)
+                                # 3. TRIGGER THE AGENT
+                                main.process_refund_email(body)
             
             # Sleep to prevent spamming Gmail
             time.sleep(5)

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Travel Booking Home Page</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0770e3",
+                        "background-light": "#ffffff",
+                        "background-dark": "#02122c",
+                        "surface-dark": "#112044",
+                        "surface-light": "#f1f2f8",
+                        "text-light": "#111236",
+                        "text-dark": "#ffffff",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                    },
+                    backgroundImage: {
+                        'hero-pattern': "url('https://images.unsplash.com/photo-1540206351-d6465b3ac5c1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')",
+                    }
+                },
+            },
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .dark ::-webkit-scrollbar-track {
+            background: #02122c;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark min-h-screen flex flex-col antialiased selection:bg-primary selection:text-white">
+    <div class="flex-grow">
+        <div class="bg-[#02122c] pb-12 relative">
+            <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-4 flex justify-between items-center text-white">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z">
+                        </path>
+                    </svg>
+                    <span class="text-2xl font-bold tracking-tight">Skyscanner</span>
+                </div>
+                <div class="flex items-center space-x-6 text-sm font-medium">
+                    <a class="hover:text-gray-300 hidden md:block" href="#">Help</a>
+                    <button class="hover:text-gray-300 flex items-center">
+                        <span class="material-symbols-outlined text-xl">language</span>
+                    </button>
+                    <button class="hover:text-gray-300 flex items-center">
+                        <span class="material-symbols-outlined text-xl">favorite</span>
+                    </button>
+                    <button class="flex items-center space-x-1 hover:text-gray-300">
+                        <span class="material-symbols-outlined text-2xl">account_circle</span>
+                        <span class="hidden md:block">Log in</span>
+                    </button>
+                </div>
+            </nav>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+                <div class="flex space-x-2 mb-8">
+                    <button
+                        class="bg-primary text-white px-4 py-2 rounded-full flex items-center space-x-2 text-sm font-medium shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:bg-blue-600 hover:shadow-lg">
+                        <span class="material-symbols-outlined text-lg">flight</span>
+                        <span>Flights</span>
+                    </button>
+                    <button
+                        class="bg-transparent border border-gray-500 text-white hover:bg-white/10 px-4 py-2 rounded-full flex items-center space-x-2 text-sm font-medium transition-all duration-300 ease-in-out hover:border-white">
+                        <span class="material-symbols-outlined text-lg">hotel</span>
+                        <span>Hotels</span>
+                    </button>
+                    <button
+                        class="bg-transparent border border-gray-500 text-white hover:bg-white/10 px-4 py-2 rounded-full flex items-center space-x-2 text-sm font-medium transition-all duration-300 ease-in-out hover:border-white">
+                        <span class="material-symbols-outlined text-lg">directions_car</span>
+                        <span>Car hire</span>
+                    </button>
+                </div>
+                <h1 class="text-3xl md:text-5xl font-bold text-white mb-8 tracking-tight">Millions of cheap flights. One
+                    simple search.</h1>
+                <div class="bg-[#05203c] p-4 md:p-6 rounded-lg shadow-xl relative z-10">
+                    <div class="mb-4">
+                        <div class="relative inline-block text-left">
+                            <button aria-expanded="true" aria-haspopup="true"
+                                class="inline-flex justify-between items-center w-full rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-transparent text-sm font-medium text-white hover:bg-white/10 focus:outline-none"
+                                id="menu-button" type="button">
+                                Return
+                                <span class="material-symbols-outlined ml-2 text-base">expand_more</span>
+                            </button>
+                        </div>
+                        <div class="relative inline-block text-left ml-2">
+                            <button
+                                class="inline-flex justify-between items-center w-full rounded-md border border-transparent px-2 py-2 bg-transparent text-sm font-medium text-gray-300 hover:text-white focus:outline-none"
+                                type="button">
+                                1 Adult, Economy
+                                <span class="material-symbols-outlined ml-1 text-base">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-1 md:gap-2">
+                        <div class="md:col-span-3 relative group">
+                            <label
+                                class="absolute top-2 left-3 text-xs text-gray-500 font-semibold z-10 pointer-events-none">From</label>
+                            <input
+                                class="block w-full pt-6 pb-2 pl-3 pr-10 text-gray-900 bg-white rounded-md border-0 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 font-medium"
+                                placeholder="Country, city or airport" type="text" value="" id="from-input" />
+                        </div>
+                        <div class="hidden md:flex md:col-span-1 justify-center items-center relative z-20">
+                            <button
+                                class="bg-white rounded-full p-1 shadow-md border border-gray-200 hover:bg-gray-50 hover:rotate-180 transition-transform duration-300 -ml-4 -mr-4 absolute">
+                                <span class="material-symbols-outlined text-primary">swap_horiz</span>
+                            </button>
+                        </div>
+                        <div class="md:col-span-3 relative group">
+                            <label
+                                class="absolute top-2 left-3 text-xs text-gray-500 font-semibold z-10 pointer-events-none">To</label>
+                            <input
+                                class="block w-full pt-6 pb-2 pl-3 pr-10 text-gray-900 bg-white rounded-md border-0 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 font-medium"
+                                placeholder="Country, city or airport" type="text" id="to-input" />
+                        </div>
+                        <div class="md:col-span-2 relative">
+                            <label
+                                class="absolute top-2 left-3 text-xs text-gray-500 font-semibold z-10 pointer-events-none">Depart</label>
+                            <button
+                                class="block w-full h-full text-left pt-6 pb-2 pl-3 pr-3 text-gray-500 bg-white rounded-md border-0 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm font-medium"
+                                id="depart-btn">
+                                Add date
+                            </button>
+                        </div>
+                        <div class="md:col-span-2 relative">
+                            <label
+                                class="absolute top-2 left-3 text-xs text-gray-500 font-semibold z-10 pointer-events-none">Return</label>
+                            <button
+                                class="block w-full h-full text-left pt-6 pb-2 pl-3 pr-3 text-gray-500 bg-white rounded-md border-0 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm font-medium">
+                                Add date
+                            </button>
+                        </div>
+                        <div class="md:col-span-1">
+                            <button
+                                class="w-full h-full bg-primary hover:bg-blue-600 text-white font-bold py-3 md:py-0 rounded-md shadow-lg transition-colors flex items-center justify-center text-lg md:text-xl"
+                                id="search-btn">
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex flex-wrap gap-4 text-white text-sm">
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input
+                                class="form-checkbox rounded text-primary bg-transparent border-gray-500 focus:ring-primary h-4 w-4"
+                                type="checkbox" />
+                            <span class="ml-2">Add nearby airports</span>
+                        </label>
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input
+                                class="form-checkbox rounded text-primary bg-transparent border-gray-500 focus:ring-primary h-4 w-4"
+                                type="checkbox" />
+                            <span class="ml-2">Direct flights</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bg-[#02122c] h-8 w-full rounded-b-[2rem] absolute top-full left-0 z-0 hidden"></div>
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <a class="group block bg-[#05203c] hover:bg-[#072a4d] rounded-lg p-6 shadow-md transition-colors border border-transparent hover:border-blue-800"
+                    href="#">
+                    <div class="flex items-center space-x-4">
+                        <span class="material-symbols-outlined text-white text-3xl">hotel</span>
+                        <h3 class="text-white font-bold text-lg">Hotels</h3>
+                    </div>
+                </a>
+                <a class="group block bg-[#05203c] hover:bg-[#072a4d] rounded-lg p-6 shadow-md transition-colors border border-transparent hover:border-blue-800"
+                    href="#">
+                    <div class="flex items-center space-x-4">
+                        <span class="material-symbols-outlined text-white text-3xl">directions_car</span>
+                        <h3 class="text-white font-bold text-lg">Car hire</h3>
+                    </div>
+                </a>
+                <a class="group block bg-[#05203c] hover:bg-[#072a4d] rounded-lg p-6 shadow-md transition-colors border border-transparent hover:border-blue-800"
+                    href="#">
+                    <div class="flex items-center space-x-4">
+                        <span class="material-symbols-outlined text-white text-3xl">public</span>
+                        <h3 class="text-white font-bold text-lg">Explore everywhere</h3>
+                    </div>
+                </a>
+            </div>
+            <div class="relative rounded-2xl overflow-hidden shadow-2xl h-[400px] md:h-[500px]">
+                <img alt="Woman walking on a sunny beach" class="absolute inset-0 w-full h-full object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJZmqwR_gnBlSNhOFYMiHjVrMswMQnYrXgIJt7H47PV_lDCbD96Tj3jtg1V1hhXPO_lWqPR7xOIwvKXyzhcTnUuxOXYJt3s0qxawd5An1MNhyAIvFwPJFFFFD45FZ-11Kkpz8CpwnDNjGOWmz1G37Wl381VTxGggzhzMXY85OhxGfQ9axi9-xP3ubNnzCjxTJc3j-pgwoNdudDeY537LnUzqIx8HkwMNk8xe155Xts4HKKSA7gqRKvA4_0Lg7Lz4htPZdpIlFl72Wr" />
+                <div class="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent"></div>
+                <div class="absolute top-0 left-0 h-full flex flex-col justify-center px-8 md:px-16 max-w-lg">
+                    <h2 class="text-4xl md:text-5xl font-bold text-white leading-tight mb-4 drop-shadow-lg">
+                        Savvy travellers plan in Jan
+                    </h2>
+                    <p class="text-white text-lg mb-8 drop-shadow-md font-medium">
+                        Find great deals on epic trips with Explore Everywhere.
+                    </p>
+                    <button
+                        class="bg-white text-black font-bold py-3 px-6 rounded-md shadow-lg hover:bg-gray-100 transition-colors w-fit">
+                        Check it out
+                    </button>
+                </div>
+            </div>
+            <div class="py-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-8">Booking flights with
+                    Skyscanner</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                    <div class="space-y-4">
+                        <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                            <button class="flex justify-between items-center w-full text-left group">
+                                <span
+                                    class="text-base font-medium text-gray-900 dark:text-gray-200 group-hover:text-primary transition-colors">How
+                                    does Skyscanner work?</span>
+                                <span
+                                    class="material-symbols-outlined text-gray-400 group-hover:text-primary">expand_more</span>
+                            </button>
+                        </div>
+                        <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                            <button class="flex justify-between items-center w-full text-left group">
+                                <span
+                                    class="text-base font-medium text-gray-900 dark:text-gray-200 group-hover:text-primary transition-colors">How
+                                    can I find the cheapest flight using Skyscanner?</span>
+                                <span
+                                    class="material-symbols-outlined text-gray-400 group-hover:text-primary">expand_more</span>
+                            </button>
+                        </div>
+                        <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                            <button class="flex justify-between items-center w-full text-left group">
+                                <span
+                                    class="text-base font-medium text-gray-900 dark:text-gray-200 group-hover:text-primary transition-colors">Where
+                                    should I book a flight to right now?</span>
+                                <span
+                                    class="material-symbols-outlined text-gray-400 group-hover:text-primary">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                            <button class="flex justify-between items-center w-full text-left group">
+                                <span
+                                    class="text-base font-medium text-gray-900 dark:text-gray-200 group-hover:text-primary transition-colors">Does
+                                    Skyscanner do hotels too?</span>
+                                <span
+                                    class="material-symbols-outlined text-gray-400 group-hover:text-primary">expand_more</span>
+                            </button>
+                        </div>
+                        <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                            <button class="flex justify-between items-center w-full text-left group">
+                                <span
+                                    class="text-base font-medium text-gray-900 dark:text-gray-200 group-hover:text-primary transition-colors">What
+                                    about car hire?</span>
+                                <span
+                                    class="material-symbols-outlined text-gray-400 group-hover:text-primary">expand_more</span>
+                            </button>
+                        </div>
+                        <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                            <button class="flex justify-between items-center w-full text-left group">
+                                <span
+                                    class="text-base font-medium text-gray-900 dark:text-gray-200 group-hover:text-primary transition-colors">What’s
+                                    a Price Alert?</span>
+                                <span
+                                    class="material-symbols-outlined text-gray-400 group-hover:text-primary">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer class="bg-gray-100 dark:bg-surface-dark border-t border-gray-200 dark:border-gray-700 py-12 mt-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="font-bold text-gray-900 dark:text-white mb-4">Company</h4>
+                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <li><a class="hover:underline" href="#">About us</a></li>
+                        <li><a class="hover:underline" href="#">Careers</a></li>
+                        <li><a class="hover:underline" href="#">Sustainability</a></li>
+                        <li><a class="hover:underline" href="#">Brand</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-900 dark:text-white mb-4">Help</h4>
+                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <li><a class="hover:underline" href="#">Help Centre</a></li>
+                        <li><a class="hover:underline" href="#">Privacy Settings</a></li>
+                        <li><a class="hover:underline" href="#">Security</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-900 dark:text-white mb-4">Explore</h4>
+                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <li><a class="hover:underline" href="#">Cities</a></li>
+                        <li><a class="hover:underline" href="#">Airports</a></li>
+                        <li><a class="hover:underline" href="#">Countries</a></li>
+                        <li><a class="hover:underline" href="#">Airlines</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-900 dark:text-white mb-4">Follow us</h4>
+                    <div class="flex space-x-4">
+                        <div class="w-6 h-6 bg-gray-400 rounded-full"></div>
+                        <div class="w-6 h-6 bg-gray-400 rounded-full"></div>
+                        <div class="w-6 h-6 bg-gray-400 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-500 dark:text-gray-400">
+                © 2024 Skyscanner Ltd. All rights reserved.
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // System Added: Minimal Navigation Logic
+        // We only attach the click handler. We DO NOT modify styles.
+        const searchBtn = document.getElementById('search-btn');
+
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => {
+                // Simulate "Loading" state text only
+                searchBtn.innerText = 'Searching...';
+                setTimeout(() => {
+                    window.location.href = 'search_results.html';
+                }, 1000);
+            });
+        }
+    </script>
+
+</body>
+
+</html>

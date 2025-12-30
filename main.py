@@ -13,18 +13,21 @@ def process_refund_email(email_body):
         airline = data.get("airline")
         customer_name = data.get("customer_name")
         
-        print(f"ANALYSIS COMPLETE: Airline='{airline}' | PNR='{pnr}' | Name='{customer_name}'", flush=True)
+        origin = data.get("origin", "Unknown")
+        destination = data.get("destination", "Unknown")
+        
+        print(f"ANALYSIS COMPLETE: Airline='{airline}' | PNR='{pnr}' | Name='{customer_name}' | Route='{origin}->{destination}'", flush=True)
         
         # Step 2: Route to the correct bot (case-insensitive check)
         airline_lower = airline.lower() if airline else ""
         
         if "indigo" in airline_lower or "6e" in airline_lower:
             print("Routing to INDIGO Agent...", flush=True)
-            bot.start_indigo_process(pnr, customer_name)
+            bot.start_indigo_process(pnr, customer_name, origin, destination)
             
         elif "air india" in airline_lower:
             print("Routing to AIR INDIA Agent...", flush=True)
-            bot.start_airindia_process(pnr, customer_name)
+            bot.start_airindia_process(pnr, customer_name, origin, destination)
             
         else:
             print(f"Error: We do not support '{airline}' yet.", flush=True)

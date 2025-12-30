@@ -1,273 +1,297 @@
-from playwright.sync_api import sync_playwright
-import time
 import os
+import time
+import json
+from playwright.sync_api import sync_playwright
 import database
+import backend
+import brain
 
-# --- 1. INDIGO PROCESS ---
-def start_indigo_process(pnr_number, customer_name):
-    print(f"INDIGO BOT: Opening local portal for PNR {pnr_number}...", flush=True)
-    run_local_bot("indigo.html", pnr_number, "Indigo", customer_name)
+# Disable browser automation restrictions for smoother simulation
+ARGS = [
+    '--disable-blink-features=AutomationControlled',
+    '--start-maximized',
+    '--no-sandbox'
+]
 
-# --- 2. AIR INDIA PROCESS ---
-def start_airindia_process(pnr_number, customer_name):
-    print(f"AIR INDIA BOT: Opening local portal for PNR {pnr_number}...", flush=True)
-    run_local_bot("airindia.html", pnr_number, "Air India", customer_name)
+# --- 1. REFUND PROCESS (Indigo / Air India) ---
+def run_refund_process(page, airline_name, pnr_number, customer_name):
+    """
+    Executes the refund flow on the airline's specific portal.
+    """
+    print(f"\n[REFUND AGENT] Starting Refund Process for {airline_name}...", flush=True)
+    
+    filename = "indigo.html" if airline_name == "Indigo" else "airindia.html"
+    file_path = os.path.abspath(filename)
+    
+    if not os.path.exists(file_path):
+        print(f"Error: {filename} not found.")
+        return False
 
-# --- SHARED LOGIC (The "Smart" Function) ---
-def run_local_bot(filename, pnr, airline_name, customer_name):
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False) # Headless=False so you see it
-        page = browser.new_page()
+    try:
+        page.goto(f"file://{file_path}", wait_until="domcontentloaded", timeout=10000)
+        print(f"Loaded {airline_name} portal.", flush=True)
+        time.sleep(2)
+
+        # A. Fill Form Details
+        print("Filling PNR & Name...", flush=True)
         
-        # 1. Load the Local File
-        file_path = os.path.abspath(filename)
-        if not os.path.exists(file_path):
-            print(f"ERROR: Could not find '{filename}' in the folder.")
-            print(f"Please rename your downloaded HTML file to '{filename}'")
-            browser.close()
-            return
+        # PNR (Try multiple selectors for robustness)
+        for selector in ['[name="pnr-booking-ref"]', '#pnr', '#pnr-input']:
+            if page.locator(selector).is_visible():
+                page.locator(selector).press_sequentially(pnr_number, delay=100)
+                break
+        
+        # Name/Email
+        for selector in ['[name="email-last-name"]', '#email', '#lastname', '#lastname-input']:
+            if page.locator(selector).is_visible():
+                # Extract last name if needed
+                val = customer_name
+                if "lastname" in selector and " " in customer_name:
+                    val = customer_name.split()[-1]
+                page.locator(selector).press_sequentially(val, delay=100)
+                break
+        
+        time.sleep(1)
+        print("Submitting Search...", flush=True)
+        
+        # Click Search/Next (Try multiple text matches)
+        submit_btn = None
+        for text in ["Get Booking Details", "Retrieve Booking", "Search", "Next"]:
+            try:
+                btn = page.get_by_text(text, exact=False).first
+                if btn.is_visible():
+                    btn.click()
+                    submit_btn = btn
+                    break
+            except:
+                continue
+        
+        if not submit_btn:
+             # Fallback ID
+             if page.locator("#nextBtn").is_visible():
+                 page.locator("#nextBtn").click()
 
+        # Wait for Next Page (Step 2)
+        time.sleep(2.5)
+
+        # B. Detect Cancellation & Refund
+        print("Detecting Flight Status...", flush=True)
+        
+        # Simulate "Flight Cancelled" detection
+        print(f"AUTONOMOUS AGENT ({airline_name}): Flight Cancellation Detected.", flush=True)
+        print("DECISION: Initiating 'Refund & Hold' protocol automatically.", flush=True)
+        
+        # Update DB State
+        database.set_bot_state("AUTONOMOUS_WORK", {
+            "airline": airline_name, 
+            "pnr": pnr_number, 
+            "status": "Refunding & Rebooking..."
+        })
+
+        # C. Execute Refund Form (If visible)
         try:
-            page.goto(f"file://{file_path}", wait_until="domcontentloaded", timeout=10000)
-            print(f"Loaded {airline_name} portal.", flush=True)
+             if page.locator("#refund-reason").is_visible():
+                 page.locator("#refund-reason").select_option("cancelled")
+                 time.sleep(1)
+                 page.locator("#refund-remarks").press_sequentially(f"Automated refund req PNR {pnr_number}", delay=50)
+                 time.sleep(0.5)
+                 if page.locator("#refund-mode").is_visible():
+                     page.locator("#refund-mode").select_option("original")
+                 
+                 page.locator("#terms-check").check()
+                 time.sleep(0.5)
+                 
+                 # Submit Refund
+                 print("Submitting Refund Request...", flush=True)
+                 if page.locator("#submitBtn").is_visible():
+                     page.locator("#submitBtn").click()
+                 
+                 time.sleep(2)
+                 
+                 # Take Screenshot of Refund Success
+                 page.screenshot(path=f"{airline_name.lower()}_refund_success.png")
+                 print("Refund Process Complete. Screenshot saved.")
+                 
+                 # Increment stats
+                 database.increment_refund_count()
+                 
         except Exception as e:
-            print(f"Warning: Page load timed out or had issues: {e}", flush=True)
-            print("Proceeding anyway...", flush=True)
+            print(f"Refund interaction warning: {e}")
 
+        return True
+
+    except Exception as e:
+        print(f"Refund Process Failed: {e}")
+        return False
+
+
+# --- 2. REBOOKING PROCESS (Skyscanner) ---
+def run_rebooking_process(page, airline_name, pnr, origin, destination):
+    """
+    Executes the rebooking search on the Skyscanner simulation.
+    """
+    print(f"\n[REBOOK AGENT] Starting Rebooking on Skyscanner...", flush=True)
+    
+    rebook_path = os.path.abspath("rebooking.html")
+    
+    # Inject dynamic route
+    if os.path.exists(rebook_path) and origin != "Unknown":
         try:
-            # 2. Fill form fields
-            print("Filling Form Details...", flush=True)
+            with open(rebook_path, "r", encoding="utf-8") as f: content = f.read()
+            if "Searching best flights..." in content:
+                new_content = content.replace("Searching best flights...", f"Showing flights for {origin} -> {destination}")
+                with open(rebook_path, "w", encoding="utf-8") as f: f.write(new_content)
+        except: pass
+
+    try:
+        page.goto(f"file://{rebook_path}")
+        time.sleep(2)
+        
+        # A. Fill Skyscanner Form
+        print("Filling Flight Details...", flush=True)
+        try:
+            page.locator("#from-input").press_sequentially(origin, delay=100)
+            time.sleep(0.3)
+            page.locator("#to-input").press_sequentially(destination, delay=100)
+            time.sleep(0.3)
             
-            # Wait for page to be ready
-            time.sleep(2)
+            # Date Visuals
+            page.locator("#depart-btn").click()
+            time.sleep(0.5)
+            tomorrow = "1 Jan 2025"
+            page.evaluate(f"document.getElementById('depart-btn').innerText = '{tomorrow}'")
+            page.evaluate(f"document.getElementById('depart-btn').classList.add('text-black', 'font-bold')")
+            
+        except Exception as e:
+            print(f"Form filling warning: {e}")
 
-            # Air India Specifics: Scroll and Accept Cookies
-            if airline_name == "Air India":
-                try:
-                    # Scroll down a bit
-                    page.mouse.wheel(0, 300)
-                    time.sleep(1)
-                    
-                    # Click "Accept All" for cookies
-                    try:
-                        # Try finding by ID first (most reliable)
-                        page.locator("#accept-cookies-btn").wait_for(state="visible", timeout=3000)
-                        page.locator("#accept-cookies-btn").click()
-                        print("Clicked 'Accept All' cookies (ID method).", flush=True)
-                    except Exception:
-                        # Fallback to text
-                        print("ID method failed for cookies, trying text...", flush=True)
-                        accept_btn = page.get_by_text("Accept All", exact=False).first
-                        if accept_btn.is_visible():
-                            accept_btn.click()
-                            print("Clicked 'Accept All' cookies (Text method).", flush=True)
-                    
-                    time.sleep(1)
-                except Exception as e:
-                    print(f"Air India specific setup failed: {e}", flush=True)
+        # Search
+        try:
+            page.locator("#search-btn").click()
+            print("Searching...", flush=True)
+        except: pass
+        
+        time.sleep(2.5) # Wait for results
+        
+        # B. Reasoning Engine (Select Air India)
+        print("Analyzing Options...", flush=True)
+        try:
+            page.locator(".ai-flight-card").wait_for(state="visible", timeout=5000)
+            
+            # Logic: Air India is better
+            reasoning_msg = "Switching to Air India. It departs at 17:00 (5 hours earlier), which is worth the small price difference."
+            print(f"DECISION: {reasoning_msg}")
+            
+            database.set_bot_state("AUTONOMOUS_WORK", {
+                "airline": airline_name, 
+                "pnr": pnr, 
+                "status": f"Rebooking Confirmed. Reason: {reasoning_msg}"
+            })
+            
+            # Click Select and go to details
+            time.sleep(1.5)
+            print("Clicking 'Select' on Air India flight...", flush=True)
+            page.locator("#hold-btn").click()
+            
+        except Exception as e:
+            print(f"Selection step warning: {e}")
 
-            # Fill PNR
-            # Fill PNR
-            try:
-                page.locator('[name="pnr-booking-ref"]').wait_for(state="visible", timeout=2000)
-                page.locator('[name="pnr-booking-ref"]').press_sequentially(pnr, delay=100)
-                print(f"Filled PNR: {pnr}", flush=True)
-            except Exception:
-                try:
-                    page.locator("#pnr").wait_for(state="visible", timeout=2000)
-                    page.locator("#pnr").press_sequentially(pnr, delay=100)
-                    print(f"Filled PNR: {pnr}", flush=True)
-                except Exception:
-                    try:
-                        # Air India new selector
-                        page.locator("#pnr-input").wait_for(state="visible", timeout=2000)
-                        page.locator("#pnr-input").press_sequentially(pnr, delay=100)
-                        print(f"Filled PNR (Air India): {pnr}", flush=True)
-                    except Exception as e3:
-                        print(f"Could not find PNR field: {e3}", flush=True)
-
-            # Fill Email/Last Name
-            try:
-                page.locator('[name="email-last-name"]').wait_for(state="visible", timeout=2000)
-                page.locator('[name="email-last-name"]').press_sequentially(customer_name, delay=100)
-                print(f"Filled Email/Last Name: {customer_name}", flush=True)
-            except Exception:
-                try:
-                    page.locator("#email").wait_for(state="visible", timeout=2000)
-                    page.locator("#email").press_sequentially(customer_name, delay=100) # Assuming email fallback is handled or name is email
-                    print(f"Filled Email: {customer_name}", flush=True)
-                except Exception:
-                    try:
-                        # Air India new selector
-                        page.locator("#lastname-input").wait_for(state="visible", timeout=2000)
-                        # Extract last name for Air India if full name is provided
-                        last_name = customer_name.split()[-1] if customer_name else "Unknown"
-                        page.locator("#lastname-input").press_sequentially(last_name, delay=100)
-                        print(f"Filled Last Name (Air India): {last_name}", flush=True)
-                    except Exception:
-                        try:
-                            # Indigo new selector
-                            page.locator("#lastname").wait_for(state="visible", timeout=2000)
-                            # Extract last name for Indigo if full name is provided
-                            last_name = customer_name.split()[-1] if customer_name else "Unknown"
-                            page.locator("#lastname").press_sequentially(last_name, delay=100)
-                            print(f"Filled Last Name (Indigo): {last_name}", flush=True)
-                        except Exception as e3:
-                            print(f"Could not find Email/Last Name field: {e3}", flush=True)
-
-            # 3. Handle Form Submission (Different for Step 1 vs Step 2)
-            print("Submitting Form...", flush=True)
+        # C. Booking Details Phase
+        try:
+            # Wait for details page to render
+            page.locator("h2:has-text('Select Seats')").wait_for(state="visible", timeout=5000)
+            print("Booking Details Loaded.", flush=True)
             time.sleep(1)
 
-            if airline_name == "Indigo":
-                try:
-                    # Step 1: Click "Get Booking Details" (Next)
-                    print("Indigo Step 1: Getting Booking...", flush=True)
-                    page.locator("#nextBtn").click()
-                    
-                    # Wait for Step 2 to appear (simulation delay + transition)
-                    try:
-                        page.locator("#step-2").wait_for(state="visible", timeout=5000)
-                        print("Indigo Step 2: Options loaded.", flush=True)
-                    except:
-                        print("Warning: Step 2 did not appear.", flush=True)
-
-                    # Step 2a: Select Reason (Slower interaction)
-                    page.locator("#refund-reason").focus() # Highlight it first
-                    time.sleep(1) # Let user see it
-                    page.locator("#refund-reason").select_option("cancelled")
-                    print("Selected Reason: Flight Cancelled", flush=True)
-                    time.sleep(1.5) # Let user read the selection
-
-                    # Step 2b: Type Remarks
-                    remarks_text = f"Automated refund request for PNR {pnr}. Flight cancelled by airline."
-                    page.locator("#refund-remarks").press_sequentially(remarks_text, delay=50)
-                    print(f"Typed Remarks: {remarks_text}", flush=True)
-                    time.sleep(1)
-
-                    # Step 2c: Select "Back to Source" (Slower)
-                    page.locator("#refund-mode").focus()
-                    time.sleep(0.5)
-                    page.locator("#refund-mode").select_option("original")
-                    print("Selected: Refund to Bank Source", flush=True)
-                    time.sleep(1)
-
-                    # Step 3: Check Terms
-                    page.locator("#terms-check").check()
-                    print("Checked: Terms & Conditions", flush=True)
-                    time.sleep(1)
-
-                    # Step 4: Final Submit
-                    page.locator("#submitBtn").click()
-                    print("Clicked: Confirm Refund", flush=True)
-
-                except Exception as e:
-                    print(f"Indigo specific flow failed: {e}", flush=True)
+            # Scroll to "read"
+            print("Reading Booking Details...", flush=True)
+            page.evaluate("window.scrollTo({top: 0, behavior: 'smooth'})")
+            time.sleep(1.5)
             
-            elif airline_name == "Air India":
-                try:
-                    # Step 1: Click "Retrieve Booking" (Next)
-                    print("Air India Step 1: Retrieving Booking...", flush=True)
-                    page.locator("#nextBtn").click()
+            # Check Baggage
+            print("Checking Baggage...", flush=True)
+            page.locator("h2:has-text('Add Baggage')").scroll_into_view_if_needed()
+            time.sleep(1)
+            if page.locator("label:has(input[name='baggage'])").count() > 1:
+                page.locator("label:has(input[name='baggage'])").nth(1).hover()
+                time.sleep(1)
+                page.locator("label:has(input[name='baggage'])").nth(0).click()
 
-                    # Wait for Step 2
-                    try:
-                        page.locator("#step-2").wait_for(state="visible", timeout=5000)
-                        print("Air India Step 2: Options loaded.", flush=True)
-                    except:
-                        print("Warning: Step 2 did not appear.", flush=True)
-
-                    # Step 2a: Select Reason (Slower interaction)
-                    page.locator("#refund-reason").focus()
-                    time.sleep(1)
-                    page.locator("#refund-reason").select_option("cancelled")
-                    print("Selected Reason: Flight Cancelled", flush=True)
-                    time.sleep(1.5)
-
-                    # Step 2b: Type Remarks (The visual "wow" factor)
-                    remarks_text = f"Automated refund request for PNR {pnr}. Flight cancelled by airline."
-                    page.locator("#refund-remarks").press_sequentially(remarks_text, delay=50)
-                    print(f"Typed Remarks: {remarks_text}", flush=True)
-                    time.sleep(1)
-
-                    # Step 2c: Select "Original Payment Source"
-                    page.locator("#refund-mode").focus()
-                    time.sleep(0.5)
-                    page.locator("#refund-mode").select_option("original")
-                    print("Selected: Original Payment Source", flush=True)
-                    time.sleep(1)
-
-                    # Step 3: Check Terms
-                    page.locator("#terms-check").check()
-                    print("Checked: Refund Policy", flush=True)
-                    time.sleep(1)
-
-                    # Step 4: Final Submit
-                    page.locator("#submitBtn").click()
-                    print("Clicked: Confirm Refund", flush=True)
-
-                except Exception as e:
-                    print(f"Air India specific flow failed: {e}", flush=True)
-            
+            # Select Best Seat
+            print("Selecting Seat...", flush=True)
+            page.locator("h2:has-text('Select Seats')").scroll_into_view_if_needed()
+            time.sleep(1)
+            if page.locator("#best-seat-1b").is_visible():
+                page.locator("#best-seat-1b").click()
+                print("Selected Premium Seat 1B.")
             else:
-                # Generic fallback (Just in case)
-                try:
-                    clicked = False
-                    # Try ID first
-                    btn = page.locator("#submitBtn")
-                    if btn.is_visible():
-                        btn.click()
-                        clicked = True
-                    else:
-                        # Try finding by text
-                        for text in ["Submit", "Next", "Retrieve Booking", "Search", "Check Status", "Get Refund"]:
-                            try:
-                                btn = page.get_by_text(text, exact=False).first
-                                if btn.is_visible():
-                                    print(f"Found button with text: {text}", flush=True)
-                                    btn.click()
-                                    clicked = True
-                                    break
-                            except:
-                                continue
-                        
-                        if not clicked:
-                            # Fallback to JS by ID
-                            page.evaluate("document.getElementById('submitBtn').click()")
-                            clicked = True
-
-                except Exception as e:
-                    print(f"Generic submit failed: {e}", flush=True) 
-
-            # Wait for navigation/action
-            time.sleep(2)
+                page.locator(".grid button:not([disabled])").nth(5).click()
             
-            # Check if we need to manually navigate to success page
-            # If URL didn't change (still on local file), load success page
-            current_url = page.url
-            if "success" not in current_url:
-                print("Navigating to success page manually...", flush=True)
-                success_filename = f"{airline_name.lower()}_success.html".replace(" ", "")
-                success_path = os.path.abspath(success_filename)
-                if os.path.exists(success_path):
-                    page.goto(f"file://{success_path}")
-                    print(f"Manually navigated to {success_filename}", flush=True)
-                else:
-                    print(f"Success file not found: {success_filename}")
-                
-                time.sleep(3)
-
-            # 4. SUCCESS SCREENSHOT
-            time.sleep(2)
-            screenshot_name = f"{airline_name.lower()}_success.png"
-            page.screenshot(path=screenshot_name)
-            print(f"Success! Screenshot saved: {screenshot_name}")
+            time.sleep(1.5) # Time to see seat selection state change
             
-            # Update Statistics
-            database.increment_refund_count()
-
+            # Passenger Details
+            try:
+                page.locator("#first-name").press_sequentially("Praneet", delay=100)
+                page.locator("#last-name").press_sequentially("Atmuri", delay=100)
+                time.sleep(0.5)
+            except: pass
+            
+            # Submit Hold
+            print("Clicking Hold & Pay...", flush=True)
+            page.evaluate("window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})")
+            time.sleep(0.5)
+            page.locator("#continue-payment-btn").click()
+            
+            # Wait for Success
+            print("Waiting for Confirmation...", flush=True)
+            page.locator("h1:has-text('Booking Successfully Held')").wait_for(state="visible", timeout=10000)
+            print("SUCCESS: Flight Held on Skyscanner!")
+            
+            database.set_bot_state("COMPLETED", {
+                "airline": "Skyscanner (Air India)", 
+                "pnr": "SKY-HOLD-888", 
+                "status": "Success. Flight held for 24h."
+            })
+            
         except Exception as e:
-            print(f"Error on {airline_name} page: {e}")
+            print(f"Booking flow error: {e}")
+
+    except Exception as e:
+        print(f"Rebooking Process Failed: {e}")
+
+
+# --- MAIN ORCHESTRATOR ---
+def autonomous_agent(airline_name, pnr, origin="Unknown", destination="Unknown"):
+    start_time = time.time()
+    
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False, args=ARGS)
+        context = browser.new_context(viewport={'width': 1500, 'height': 900})
+        page = context.new_page()
         
-        browser.close()
-        
+        try:
+            # PHASE 1: REFUND (Airline Portal)
+            # Only run if it's Indigo or Air India
+            if airline_name in ["Indigo", "Air India"]:
+                run_refund_process(page, airline_name, pnr, "Praneet Atmuri")
+                time.sleep(1)
+            
+            # PHASE 2: REBOOK (Skyscanner)
+            # We assume the refund logic detected a cancellation and triggered rebooking
+            run_rebooking_process(page, airline_name, pnr, origin, destination)
+            
+        finally:
+            print("Closing Session.")
+            time.sleep(5) # Pause so user can see the final 'Success' overlay
+            browser.close()
+
+# --- BACKWARD COMPATIBILITY ---
+def start_indigo_process(pnr, name, origin="Unknown", dest="Unknown"):
+    autonomous_agent("Indigo", pnr, origin, dest)
+
+def start_airindia_process(pnr, name, origin="Unknown", dest="Unknown"):
+    autonomous_agent("Air India", pnr, origin, dest)
+
+if __name__ == "__main__":
+    # Test directly
+    autonomous_agent("Indigo", "PNR123", "Hyderabad", "Bengaluru")

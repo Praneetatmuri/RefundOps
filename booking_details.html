@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Flight Booking Details</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for the seat map if needed */
+        .seat-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .seat-grid::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .seat-grid::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased transition-colors duration-200">
+    <!-- Top Navigation -->
+    <header
+        class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-10 py-3 shadow-sm">
+        <div class="flex items-center gap-8">
+            <div class="flex items-center gap-4 text-[#0d141b] dark:text-white">
+                <div class="size-8 text-primary">
+                    <span class="material-symbols-outlined text-4xl">travel_explore</span>
+                </div>
+                <h2 class="text-[#0d141b] dark:text-white text-xl font-bold leading-tight tracking-tight">Skyscanner
+                </h2>
+            </div>
+            <div class="hidden md:flex items-center gap-9">
+                <a class="text-[#0d141b] dark:text-slate-200 text-sm font-medium leading-normal hover:text-primary transition-colors"
+                    href="#">Flights</a>
+                <a class="text-[#0d141b] dark:text-slate-200 text-sm font-medium leading-normal hover:text-primary transition-colors"
+                    href="#">Hotels</a>
+                <a class="text-[#0d141b] dark:text-slate-200 text-sm font-medium leading-normal hover:text-primary transition-colors"
+                    href="#">Car Rentals</a>
+                <a class="text-[#0d141b] dark:text-slate-200 text-sm font-medium leading-normal hover:text-primary transition-colors"
+                    href="#">Deals</a>
+            </div>
+        </div>
+        <div class="flex flex-1 justify-end gap-8 items-center">
+            <div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-slate-100 dark:border-slate-700"
+                data-alt="User profile picture placeholder with abstract gradient"
+                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBVLciG6WvDgVvtmZngKpfU0RBNl_49R6VrRGyjz_TNxF_uRui2BOUVFUF8NNinKeD1TvbmuirmhA22CxjQk77nruL4YmYMJpWDcq2dsfnxV66vX81EEWN8wsg27qQBorIf2a-niprgnfCgS3xIYdNwH-7uOmZTry8SZcjpJVCf3bvTCgiMFZXntqPBtKKSckp4hMcAqgazFF5ON_yHvm4PeDKxqtD7-DjfzGuKX0RQLpEeSBdE-WYVVfMX4UNKLtoldonGVDETt3u2");'>
+            </div>
+        </div>
+    </header>
+    <!-- Main Layout -->
+    <main class="w-full max-w-[1440px] mx-auto px-4 md:px-10 py-8 gap-8 flex flex-col lg:flex-row">
+        <!-- LEFT COLUMN: Booking Steps -->
+        <div class="flex flex-col flex-1 gap-6 min-w-0">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap gap-2 items-center text-sm mb-2">
+                <a class="text-slate-500 dark:text-slate-400 font-medium hover:text-primary" href="#">Flight
+                    Selection</a>
+                <span class="material-symbols-outlined text-slate-400 text-sm">chevron_right</span>
+                <span class="text-primary font-bold bg-primary/10 px-3 py-1 rounded-full">Seat Selection &amp;
+                    Bags</span>
+                <span class="material-symbols-outlined text-slate-400 text-sm">chevron_right</span>
+                <span class="text-slate-400 dark:text-slate-500 font-medium">Passenger Info</span>
+                <span class="material-symbols-outlined text-slate-400 text-sm">chevron_right</span>
+                <span class="text-slate-400 dark:text-slate-500 font-medium">Payment</span>
+            </div>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Customize your flight</h1>
+            <!-- Flight Overview Card -->
+            <div
+                class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-100 p-1">
+                        <img alt="Airline Logo" class="rounded-full" data-alt="Airline logo placeholder"
+                            src="https://upload.wikimedia.org/wikipedia/en/thumb/4/46/Air_India_Express_Logo.svg/1200px-Air_India_Express_Logo.svg.png" />
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg font-bold">Hyderabad (HYD)</span>
+                            <span class="material-symbols-outlined text-slate-400">arrow_right_alt</span>
+                            <span class="text-lg font-bold">Bengaluru (BLR)</span>
+                        </div>
+                        <p class="text-slate-500 text-sm mt-1">Flight IX 123 • 1h 30m • Boeing 737</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <span
+                        class="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-xs font-bold uppercase tracking-wider rounded-full">On
+                        Time</span>
+                    <a class="text-primary text-sm font-semibold hover:underline" href="#">View Details</a>
+                </div>
+            </div>
+            <!-- Seat Selection Module -->
+            <section
+                class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-bold flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">airline_seat_recline_extra</span>
+                            Select Seats
+                        </h2>
+                        <p class="text-slate-500 text-sm mt-1">Select seats for all passengers.</p>
+                    </div>
+                    <!-- Seat Legend -->
+                    <div class="hidden md:flex gap-4 text-xs font-medium">
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-full border border-slate-300 bg-white"></div> Available
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-full bg-slate-200 dark:bg-slate-700"></div> Occupied
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-full bg-primary border border-primary"></div> Selected
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div
+                                class="w-4 h-4 rounded-full bg-amber-400 border border-amber-500 shadow-sm shadow-amber-500/50">
+                            </div> Best Seat
+                        </div>
+                    </div>
+                </div>
+                <div class="p-8 bg-slate-50 dark:bg-slate-950/50 flex flex-col items-center">
+                    <!-- Plane Fuselage -->
+                    <div
+                        class="relative bg-white dark:bg-slate-800 w-full max-w-md rounded-t-[140px] border-x-4 border-t-4 border-slate-200 dark:border-slate-700 pb-10 pt-24 px-8 shadow-lg">
+                        <div
+                            class="absolute top-8 left-1/2 -translate-x-1/2 text-slate-300 dark:text-slate-600 flex flex-col items-center">
+                            <span class="material-symbols-outlined text-4xl">flight</span>
+                            <span class="text-[10px] font-bold uppercase tracking-widest mt-1">Front</span>
+                        </div>
+                        <!-- Seat Grid -->
+                        <div class="grid grid-cols-7 gap-y-4 gap-x-2">
+                            <!-- Headers -->
+                            <div class="text-center text-slate-400 text-xs font-bold mb-2">A</div>
+                            <div class="text-center text-slate-400 text-xs font-bold mb-2">B</div>
+                            <div class="text-center text-slate-400 text-xs font-bold mb-2">C</div>
+                            <div class="text-center text-slate-300 text-xs font-bold mb-2"></div> <!-- Aisle -->
+                            <div class="text-center text-slate-400 text-xs font-bold mb-2">D</div>
+                            <div class="text-center text-slate-400 text-xs font-bold mb-2">E</div>
+                            <div class="text-center text-slate-400 text-xs font-bold mb-2">F</div>
+                            <!-- Row 1 -->
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed flex items-center justify-center"
+                                disabled="">
+                                <span class="material-symbols-outlined text-lg">close</span>
+                            </button>
+                            <button
+                                class="best-seat w-10 h-10 rounded-t-lg rounded-b-md bg-amber-100 border border-amber-300 hover:bg-amber-200 text-amber-900 flex items-center justify-center transition-colors group relative ring-2 ring-transparent hover:ring-amber-400 font-bold"
+                                id="best-seat-1b">
+                                <span class="text-xs">1B</span>
+                            </button>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <div class="flex items-center justify-center text-xs text-slate-300 font-mono">1</div>
+                            <!-- Row Num -->
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <!-- Row 2 -->
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md bg-primary text-white shadow-md shadow-blue-500/30 flex items-center justify-center ring-2 ring-primary ring-offset-2 dark:ring-offset-slate-800">
+                                <span class="material-symbols-outlined text-sm">check</span>
+                            </button>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed flex items-center justify-center"
+                                disabled="">
+                                <span class="material-symbols-outlined text-lg">close</span>
+                            </button>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed flex items-center justify-center"
+                                disabled="">
+                                <span class="material-symbols-outlined text-lg">close</span>
+                            </button>
+                            <div class="flex items-center justify-center text-xs text-slate-300 font-mono">2</div>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <!-- Row 3 -->
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <div class="flex items-center justify-center text-xs text-slate-300 font-mono">3</div>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <!-- Row 4 -->
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <div class="flex items-center justify-center text-xs text-slate-300 font-mono">4</div>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                            <button
+                                class="w-10 h-10 rounded-t-lg rounded-b-md border border-slate-300 bg-white hover:border-primary hover:text-primary dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                            </button>
+                        </div>
+                        <!-- Wings visual -->
+                        <div
+                            class="absolute top-[40%] -left-16 w-16 h-48 bg-slate-200 dark:bg-slate-700 -z-10 rounded-l-[100px] opacity-50 transform skew-y-12">
+                        </div>
+                        <div
+                            class="absolute top-[40%] -right-16 w-16 h-48 bg-slate-200 dark:bg-slate-700 -z-10 rounded-r-[100px] opacity-50 transform -skew-y-12">
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Baggage Selection -->
+            <section
+                class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
+                <h2 class="text-xl font-bold flex items-center gap-2 mb-6">
+                    <span class="material-symbols-outlined text-primary">luggage</span>
+                    Add Baggage
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Option 1 -->
+                    <label
+                        class="relative flex flex-col p-5 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:border-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group">
+                        <input checked="" class="peer sr-only" name="baggage" type="radio" />
+                        <div
+                            class="absolute top-5 right-5 w-6 h-6 rounded-full border-2 border-slate-300 peer-checked:border-primary peer-checked:bg-primary transition-all flex items-center justify-center">
+                            <span
+                                class="material-symbols-outlined text-white text-sm opacity-0 peer-checked:opacity-100">check</span>
+                        </div>
+                        <span
+                            class="material-symbols-outlined text-4xl text-slate-400 group-hover:text-primary mb-3">backpack</span>
+                        <div class="font-bold text-lg">Carry-on Only</div>
+                        <div class="text-slate-500 text-sm mt-1">1 personal item + 1 carry-on bag (10kg) included in
+                            your fare.</div>
+                        <div class="mt-4 font-bold text-green-600">Included</div>
+                        <!-- Active styling ring via CSS usually, or JS. Using peer-checked for internal styling -->
+                        <div
+                            class="absolute inset-0 border-2 border-primary rounded-xl opacity-0 peer-checked:opacity-100 pointer-events-none">
+                        </div>
+                    </label>
+                    <!-- Option 2 -->
+                    <label
+                        class="relative flex flex-col p-5 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:border-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group">
+                        <input class="peer sr-only" name="baggage" type="radio" />
+                        <div
+                            class="absolute top-5 right-5 w-6 h-6 rounded-full border-2 border-slate-300 peer-checked:border-primary peer-checked:bg-primary transition-all flex items-center justify-center">
+                            <span
+                                class="material-symbols-outlined text-white text-sm opacity-0 peer-checked:opacity-100">check</span>
+                        </div>
+                        <span
+                            class="material-symbols-outlined text-4xl text-slate-400 group-hover:text-primary mb-3">cases</span>
+                        <div class="font-bold text-lg">Checked Bag</div>
+                        <div class="text-slate-500 text-sm mt-1">Add a 23kg checked bag for your heavier items.</div>
+                        <div class="mt-4 font-bold text-slate-900 dark:text-white">+₹450</div>
+                        <div
+                            class="absolute inset-0 border-2 border-primary rounded-xl opacity-0 peer-checked:opacity-100 pointer-events-none">
+                        </div>
+                    </label>
+                </div>
+            </section>
+            <!-- Passenger Info -->
+            <section
+                class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">person</span>
+                        Passenger Details
+                    </h2>
+                    <div class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                        <input class="rounded border-slate-300 text-primary focus:ring-0 w-4 h-4" checked
+                            type="checkbox" />
+                        <span>Same as booker</span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase text-slate-500 tracking-wider">First Name</label>
+                        <input
+                            class="bg-slate-50 dark:bg-slate-800 border-none ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 w-full text-slate-900 dark:text-white placeholder-slate-400"
+                            placeholder="e.g. John" type="text" id="first-name" />
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase text-slate-500 tracking-wider">Last Name</label>
+                        <input
+                            class="bg-slate-50 dark:bg-slate-800 border-none ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 w-full text-slate-900 dark:text-white placeholder-slate-400"
+                            placeholder="e.g. Doe" type="text" id="last-name" />
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase text-slate-500 tracking-wider">Date of Birth</label>
+                        <div class="flex gap-2">
+                            <input
+                                class="bg-slate-50 dark:bg-slate-800 border-none ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 w-20 text-center text-slate-900 dark:text-white"
+                                placeholder="DD" type="text" />
+                            <input
+                                class="bg-slate-50 dark:bg-slate-800 border-none ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 w-20 text-center text-slate-900 dark:text-white"
+                                placeholder="MM" type="text" />
+                            <input
+                                class="bg-slate-50 dark:bg-slate-800 border-none ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 flex-1 text-slate-900 dark:text-white"
+                                placeholder="YYYY" type="text" />
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold uppercase text-slate-500 tracking-wider">Passport Number</label>
+                        <input
+                            class="bg-slate-50 dark:bg-slate-800 border-none ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 w-full text-slate-900 dark:text-white placeholder-slate-400"
+                            placeholder="Required for international travel" type="text" />
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- RIGHT COLUMN: Sticky Summary -->
+        <aside class="w-full lg:w-[380px] shrink-0">
+            <div class="sticky top-24 flex flex-col gap-4">
+                <div
+                    class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
+                    <div class="p-6 bg-slate-900 text-white dark:bg-slate-800">
+                        <h3 class="text-lg font-bold">Booking Summary</h3>
+                        <p class="text-slate-400 text-sm">Review your trip details</p>
+                    </div>
+                    <div class="p-6 flex flex-col gap-4">
+                        <!-- Itinerary Brief -->
+                        <div class="flex gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+                            <div class="flex flex-col items-center gap-1">
+                                <span class="text-xs font-bold text-slate-400">DEP</span>
+                                <span class="text-lg font-bold">17:00</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center pt-2">
+                                <div class="w-full h-px bg-slate-300 relative">
+                                    <div
+                                        class="absolute -top-1.5 left-1/2 -translate-x-1/2 bg-slate-100 dark:bg-slate-800 rounded-full p-0.5">
+                                        <span
+                                            class="material-symbols-outlined text-xs text-slate-400 rotate-90">flight</span>
+                                    </div>
+                                </div>
+                                <span class="text-xs text-slate-400 mt-2">1h 30m</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-1">
+                                <span class="text-xs font-bold text-slate-400">ARR</span>
+                                <span class="text-lg font-bold">18:30</span>
+                            </div>
+                        </div>
+                        <!-- Price Breakdown -->
+                        <div class="flex flex-col gap-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-slate-600 dark:text-slate-400">Adult x 1 (Base Fare)</span>
+                                <span class="font-medium">₹2926</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-600 dark:text-slate-400">Taxes &amp; Fees</span>
+                                <span class="font-medium">₹500</span>
+                            </div>
+                            <div class="flex justify-between text-primary">
+                                <span class="flex items-center gap-1"><span
+                                        class="material-symbols-outlined text-sm">airline_seat_recline_extra</span> Seat
+                                    2A (Selected)</span>
+                                <span class="font-medium">₹200</span>
+                            </div>
+                            <div class="flex justify-between text-slate-400 italic">
+                                <span>Baggage</span>
+                                <span>--</span>
+                            </div>
+                        </div>
+                        <!-- Total -->
+                        <div
+                            class="pt-4 mt-2 border-t border-slate-100 dark:border-slate-800 flex justify-between items-end">
+                            <div>
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total
+                                    Price</span>
+                                <div class="text-3xl font-bold text-slate-900 dark:text-white leading-none mt-1">₹3,426
+                                </div>
+                            </div>
+                            <span class="text-xs text-slate-400 mb-1">INR</span>
+                        </div>
+                        <button
+                            class="w-full mt-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold py-4 rounded-full shadow-lg shadow-green-500/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2 group border border-green-400"
+                            id="continue-payment-btn">
+                            Hold & Pay
+                            <span
+                                class="material-symbols-outlined group-hover:translate-x-1 transition-transform">lock</span>
+                        </button>
+                        <div class="text-center">
+                            <a class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 underline"
+                                href="#">Cancellation Policy</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Assistance Card -->
+                <div
+                    class="bg-blue-50 dark:bg-slate-800/50 p-4 rounded-xl flex items-center gap-3 border border-blue-100 dark:border-slate-700">
+                    <div class="bg-white dark:bg-slate-800 p-2 rounded-full text-primary shadow-sm">
+                        <span class="material-symbols-outlined">support_agent</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-900 dark:text-white">Need help?</p>
+                        <p class="text-xs text-slate-500">Call our 24/7 support line.</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+    <!-- Footer Simple -->
+    <footer class="mt-12 py-8 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+        <div class="max-w-[1440px] mx-auto px-10 text-center">
+            <p class="text-slate-400 text-sm">© 2024 TravelBooker Inc. All rights reserved.</p>
+        </div>
+    </footer>
+    <script>
+        // System Added: State-Based Pricing Logic
+        const state = {
+            baseFare: 2926, // Derived from total 3426 - 500 tax
+            taxes: 500,
+            seatPrice: 0,
+            baggagePrice: 0
+        };
+
+        // DOM Elements
+        const baseFareEl = document.querySelector('.flex.justify-between:nth-child(1) .font-medium');
+        const taxesEl = document.querySelector('.flex.justify-between:nth-child(2) .font-medium');
+        const seatEl = document.querySelector('.flex.justify-between:nth-child(3) .font-medium');
+        const seatLabelEl = document.querySelector('.flex.justify-between:nth-child(3) span');
+        const baggageEl = document.querySelector('.flex.justify-between:nth-child(4) span:nth-child(2)');
+        const totalEl = document.querySelector('.text-3xl.font-bold');
+
+        // Formatter
+        const formatMoney = (amount) => '₹' + amount.toLocaleString('en-IN');
+
+        function render() {
+            // Update Summary Lines
+            if (baseFareEl) baseFareEl.textContent = formatMoney(state.baseFare);
+            if (taxesEl) taxesEl.textContent = formatMoney(state.taxes);
+
+            // Seat Line
+            if (seatEl) {
+                seatEl.textContent = state.seatPrice > 0 ? formatMoney(state.seatPrice) : '--';
+                seatEl.classList.toggle('text-green-600', state.seatPrice > 0);
+            }
+
+            // Baggage Line
+            if (baggageEl) {
+                baggageEl.textContent = state.baggagePrice > 0 ? formatMoney(state.baggagePrice) : '--';
+                baggageEl.classList.toggle('text-green-600', state.baggagePrice > 0);
+            }
+
+            // Total
+            const total = state.baseFare + state.taxes + state.seatPrice + state.baggagePrice;
+            if (totalEl) totalEl.textContent = formatMoney(total);
+        }
+
+        // Initialize with URL params if present
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlPrice = parseInt(urlParams.get('price'));
+        if (urlPrice) {
+            state.baseFare = urlPrice - state.taxes;
+        }
+        render();
+
+        // --- Event Listeners ---
+
+        // 1. Seat Selection
+        const seats = document.querySelectorAll('.grid button:not(:disabled)');
+        let currentSeatBtn = null;
+
+        seats.forEach(seat => {
+            seat.addEventListener('click', () => {
+                // If clicking the same seat, deselect it
+                if (currentSeatBtn === seat) {
+                    resetSeatStyle(seat);
+                    state.seatPrice = 0;
+                    if (seatLabelEl) seatLabelEl.innerHTML = `<span class="material-symbols-outlined text-sm">airline_seat_recline_extra</span> Select Seat`;
+                    currentSeatBtn = null;
+                } else {
+                    // Deselect previous
+                    if (currentSeatBtn) resetSeatStyle(currentSeatBtn);
+
+                    // Select new
+                    currentSeatBtn = seat;
+                    applySeatStyle(seat);
+
+                    // Determine price based on class/id
+                    let price = 0;
+                    let seatName = "Seat";
+
+                    if (seat.classList.contains('best-seat') || seat.id === 'best-seat-1b') {
+                        price = 400; // Best Seat Price
+                        seatName = "Seat 1B (Premium)";
+                    } else {
+                        // Standard seats
+                        // Simple logic to find seat number from DOM or mock it
+                        const rowDiv = seat.previousElementSibling;
+                        let rowNum = "X";
+                        // This is tricky without specific IDs on every button, but for demo:
+                        if (seat.textContent.trim()) {
+                            seatName = "Seat " + seat.textContent.trim();
+                        } else {
+                            seatName = "Seat 2A"; // Default fallback for demo
+                            price = 200;
+                        }
+                    }
+
+                    state.seatPrice = price;
+                    if (seatLabelEl) seatLabelEl.innerHTML = `<span class="material-symbols-outlined text-sm">check_circle</span> ${seatName}`;
+                }
+                render();
+            });
+        });
+
+        function applySeatStyle(btn) {
+            btn.classList.add('bg-primary', 'text-white', 'ring-2', 'ring-primary', 'ring-offset-1');
+            btn.classList.remove('bg-white', 'hover:border-primary');
+            // If it was best seat:
+            if (btn.classList.contains('best-seat')) {
+                btn.classList.remove('bg-amber-100', 'text-amber-900', 'border-amber-300');
+            }
+        }
+
+        function resetSeatStyle(btn) {
+            btn.classList.remove('bg-primary', 'text-white', 'ring-2', 'ring-primary', 'ring-offset-1');
+            btn.classList.add('bg-white');
+
+            // Restore special styles
+            if (btn.classList.contains('best-seat')) {
+                btn.classList.add('bg-amber-100', 'text-amber-900', 'border-amber-300');
+            }
+        }
+
+        // 2. Baggage Selection
+        const baggageInputs = document.querySelectorAll('input[name="baggage"]');
+        baggageInputs.forEach(input => {
+            input.addEventListener('change', (e) => {
+                const container = e.target.closest('label');
+                const costText = container.querySelector('.text-slate-900, .mt-4.font-bold');
+
+                if (costText && costText.textContent.includes('450')) {
+                    state.baggagePrice = 450;
+                } else {
+                    state.baggagePrice = 0;
+                }
+                render();
+            });
+        });
+
+        // 3. Navigation
+        const continueBtn = document.getElementById('continue-payment-btn');
+        if (continueBtn) {
+            continueBtn.addEventListener('click', () => {
+                continueBtn.innerHTML = `
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                `;
+                continueBtn.classList.add('opacity-75', 'cursor-wait');
+                setTimeout(() => {
+                    window.location.href = 'booking_held.html';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>

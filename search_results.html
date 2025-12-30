@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Flight Search Results</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0770e3", // Skyscanner Blue equivalent
+                        secondary: "#042759", // Dark Navy
+                        "background-light": "#f1f2f8",
+                        "background-dark": "#111216",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1d1f25",
+                        "text-light": "#111236",
+                        "text-dark": "#e1e3e8",
+                        "border-light": "#dddde5",
+                        "border-dark": "#2c2f38",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                    },
+                },
+            },
+        };
+    </script>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark antialiased min-h-screen">
+    <header class="bg-secondary text-white py-3 px-4 lg:px-8 flex justify-between items-center dark:bg-[#0b0c10]">
+        <div class="flex items-center space-x-2">
+            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z">
+                </path>
+            </svg>
+            <span class="text-2xl font-bold tracking-tight">Skyscanner</span>
+        </div>
+        <div class="flex items-center space-x-6">
+            <a class="hidden md:block hover:text-gray-300 text-sm font-medium" href="#">Help</a>
+            <button
+                class="hidden md:flex items-center space-x-1 hover:bg-white/10 px-3 py-1.5 rounded-full transition text-sm">
+                <span>English (UK)</span>
+                <img alt="India Flag" class="w-5 h-3 object-cover rounded-sm ml-1"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAywWipglgz1O-TGkmASRi06r_LwNEaF51p5q9cEJIRO_4gEflgQT_P88wxnhcLX9zJk6S1YyO6cTYDlr_lDUu0dYEs3MhgIwgkAAnHDaTyeL8KnXct2PuPcFkIDmzq0EcsChSJzI30nD1xgNJBUtAv4MZR1u0PcCXB1ix2LaSt7ecRJJgnEU4Qyf1oaQMxrkO59kwwaDAOn5eChHkgF-JI0jZ7PK0eggWu3wEPKCPLOp1KdAxYG32jo7YDZKividiWyJcmUdfsx22p" />
+                <span>India</span>
+                <span>₹ INR</span>
+            </button>
+            <button class="hover:text-primary transition">
+                <span class="material-icons">favorite</span>
+            </button>
+            <button
+                class="bg-white text-secondary px-5 py-2 rounded font-bold hover:bg-gray-100 transition dark:bg-surface-dark dark:text-white dark:hover:bg-gray-700">Log
+                in</button>
+        </div>
+    </header>
+    <div class="bg-secondary pb-8 px-4 lg:px-8 pt-4 dark:bg-[#0b0c10]">
+        <div class="flex space-x-3 mb-6">
+            <button class="flex items-center space-x-2 bg-primary text-white px-4 py-2 rounded-full font-medium">
+                <span class="material-icons text-sm">flight</span>
+                <span>Flights</span>
+            </button>
+            <button
+                class="flex items-center space-x-2 bg-transparent text-white border border-white/30 hover:bg-white/10 px-4 py-2 rounded-full font-medium transition">
+                <span class="material-icons text-sm">hotel</span>
+                <span>Hotels</span>
+            </button>
+            <button
+                class="flex items-center space-x-2 bg-transparent text-white border border-white/30 hover:bg-white/10 px-4 py-2 rounded-full font-medium transition">
+                <span class="material-icons text-sm">directions_car</span>
+                <span>Cars</span>
+            </button>
+        </div>
+        <div class="flex items-center gap-2">
+            <button class="bg-primary p-3 rounded-md text-white hover:bg-blue-600 transition">
+                <span class="material-icons">search</span>
+            </button>
+            <div
+                class="flex-grow bg-[#1d3866] dark:bg-surface-dark rounded-md flex items-center px-4 py-3 text-white border border-transparent focus-within:border-primary transition">
+                <div class="flex-grow flex items-center justify-between">
+                    <div
+                        class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 w-full text-sm md:text-base truncate">
+                        <span class="font-medium">Hyderabad (HYD) – Bengaluru (BLR)</span>
+                        <span class="hidden md:inline text-gray-400">•</span>
+                        <span>1 adult, Economy</span>
+                    </div>
+                </div>
+            </div>
+            <button class="bg-[#1d3866] dark:bg-surface-dark p-3 rounded-md text-white hover:bg-opacity-80 transition">
+                <span class="material-icons">chevron_left</span>
+            </button>
+            <div
+                class="bg-[#1d3866] dark:bg-surface-dark px-6 py-3 rounded-md text-white font-medium whitespace-nowrap">
+                Thu, 15 Jan
+            </div>
+            <button class="bg-[#1d3866] dark:bg-surface-dark p-3 rounded-md text-white hover:bg-opacity-80 transition">
+                <span class="material-icons">chevron_right</span>
+            </button>
+        </div>
+    </div>
+    <main class="container mx-auto px-4 py-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-1 mb-6">
+            <button
+                class="bg-surface-light dark:bg-surface-dark p-3 rounded-sm flex flex-col items-center justify-center border-b-4 border-transparent hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                <span class="text-xs text-gray-500 dark:text-gray-400">12 Jan</span>
+                <span class="font-bold text-green-600 dark:text-green-400">₹3,426</span>
+            </button>
+            <button
+                class="bg-green-50 dark:bg-green-900/20 p-3 rounded-sm flex flex-col items-center justify-center border-b-4 border-transparent">
+                <span class="text-xs text-gray-500 dark:text-gray-400">13 Jan</span>
+                <span class="font-bold text-green-700 dark:text-green-400">★ ₹3,281</span>
+            </button>
+            <button
+                class="bg-surface-light dark:bg-surface-dark p-3 rounded-sm flex flex-col items-center justify-center border-b-4 border-transparent">
+                <span class="text-xs text-gray-500 dark:text-gray-400">14 Jan</span>
+                <span class="font-bold text-gray-800 dark:text-gray-200">₹3,814</span>
+            </button>
+            <button
+                class="bg-secondary text-white p-3 rounded-sm flex flex-col items-center justify-center shadow-lg relative z-10">
+                <span class="text-xs text-gray-300">15 Jan</span>
+                <span class="font-bold">★ ₹3,281</span>
+            </button>
+            <button
+                class="bg-surface-light dark:bg-surface-dark p-3 rounded-sm flex flex-col items-center justify-center border-b-4 border-transparent">
+                <span class="text-xs text-gray-500 dark:text-gray-400">16 Jan</span>
+                <span class="font-bold text-gray-800 dark:text-gray-200">₹3,584</span>
+            </button>
+            <button
+                class="bg-surface-light dark:bg-surface-dark p-3 rounded-sm flex flex-col items-center justify-center border-b-4 border-transparent">
+                <span class="text-xs text-gray-500 dark:text-gray-400">17 Jan</span>
+                <span class="font-bold text-green-600 dark:text-green-400">₹3,530</span>
+            </button>
+            <button
+                class="bg-surface-light dark:bg-surface-dark p-3 rounded-sm flex flex-col items-center justify-center border-b-4 border-transparent">
+                <span class="text-xs text-gray-500 dark:text-gray-400">18 Jan</span>
+                <span class="font-bold text-gray-800 dark:text-gray-200">₹3,584</span>
+            </button>
+        </div>
+        <div class="flex flex-col lg:flex-row gap-6">
+            <aside class="w-full lg:w-1/4 space-y-6">
+                <div
+                    class="bg-surface-light dark:bg-surface-dark p-4 rounded-lg shadow-sm flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="material-icons text-gray-500 dark:text-gray-400">notifications_active</span>
+                        <span class="font-semibold text-sm">Track prices</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input class="sr-only peer" type="checkbox" value="" />
+                        <div
+                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary">
+                        </div>
+                    </label>
+                </div>
+                <div class="border-b border-border-light dark:border-border-dark pb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-lg">Stops</h3>
+                        <span class="material-icons text-gray-500 cursor-pointer">expand_less</span>
+                    </div>
+                    <div class="space-y-3">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input checked=""
+                                class="form-checkbox h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary dark:bg-gray-800 dark:border-gray-600"
+                                type="checkbox" />
+                            <div class="flex flex-col">
+                                <span class="text-sm">Direct</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">from ₹3,281</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input checked=""
+                                class="form-checkbox h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary dark:bg-gray-800 dark:border-gray-600"
+                                type="checkbox" />
+                            <div class="flex flex-col">
+                                <span class="text-sm">1 stop</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">from ₹3,567</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input checked=""
+                                class="form-checkbox h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary dark:bg-gray-800 dark:border-gray-600"
+                                type="checkbox" />
+                            <div class="flex flex-col">
+                                <span class="text-sm">2+ stops</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">from ₹11,908</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="border-b border-border-light dark:border-border-dark pb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-lg">Baggage</h3>
+                        <span class="material-icons text-gray-500 cursor-pointer">expand_less</span>
+                    </div>
+                    <div class="space-y-3">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <div class="w-5 h-5 border border-gray-300 rounded dark:border-gray-600"></div>
+                            <span class="text-sm flex items-center gap-2"><span
+                                    class="material-icons text-sm text-gray-500">backpack</span> Cabin bag</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <div class="w-5 h-5 border border-gray-300 rounded dark:border-gray-600"></div>
+                            <span class="text-sm flex items-center gap-2"><span
+                                    class="material-icons text-sm text-gray-500">luggage</span> Checked bag</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="border-b border-border-light dark:border-border-dark pb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-lg">Departure times</h3>
+                        <span class="material-icons text-gray-500 cursor-pointer">expand_less</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span>Outbound</span>
+                            <span class="text-gray-500">00:00 - 23:59</span>
+                        </div>
+                        <div class="relative h-1 bg-gray-200 rounded dark:bg-gray-700">
+                            <div class="absolute left-0 right-0 top-0 bottom-0 bg-primary rounded"></div>
+                            <div class="absolute left-0 -top-1.5 w-4 h-4 bg-primary rounded-full cursor-pointer shadow">
+                            </div>
+                            <div
+                                class="absolute right-0 -top-1.5 w-4 h-4 bg-primary rounded-full cursor-pointer shadow">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-lg">Airlines</h3>
+                        <span class="material-icons text-gray-500 cursor-pointer">expand_less</span>
+                    </div>
+                    <div class="flex gap-2 mb-4">
+                        <button
+                            class="text-xs px-2 py-1 border border-gray-300 rounded hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800">Clear
+                            all</button>
+                    </div>
+                    <div class="space-y-3">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input checked=""
+                                class="form-checkbox h-5 w-5 text-primary rounded border-gray-300 dark:bg-gray-800 dark:border-gray-600"
+                                type="checkbox" />
+                            <div class="flex flex-col">
+                                <span class="text-sm">Air India Express</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">from ₹3,281</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input checked=""
+                                class="form-checkbox h-5 w-5 text-primary rounded border-gray-300 dark:bg-gray-800 dark:border-gray-600"
+                                type="checkbox" />
+                            <div class="flex flex-col">
+                                <span class="text-sm">IndiGo</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">from ₹4,289</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </aside>
+            <div class="w-full lg:w-3/4">
+                <div class="flex justify-between items-center mb-4 text-sm text-gray-500 dark:text-gray-400">
+                    <div class="flex items-center gap-2">
+                        <span class="animate-spin material-icons text-primary text-base">progress_activity</span>
+                        <span>(Checked 26 of 29 providers)</span>
+                    </div>
+                    <a class="underline hover:text-primary" href="#">Show whole month</a>
+                </div>
+                <div
+                    class="bg-surface-light dark:bg-surface-dark rounded-lg shadow-sm mb-6 flex divide-x divide-gray-200 dark:divide-gray-700 overflow-hidden">
+                    <div class="flex-1 p-3 bg-secondary text-white cursor-pointer relative">
+                        <div class="text-sm font-light text-gray-300">Best</div>
+                        <div class="font-bold text-lg">₹3,426</div>
+                        <div class="text-xs text-gray-400">1h 30</div>
+                        <div class="absolute bottom-0 left-0 w-full h-1 bg-primary"></div>
+                    </div>
+                    <div class="flex-1 p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                        <div class="text-sm font-light text-gray-500 dark:text-gray-400">Cheapest</div>
+                        <div class="font-bold text-lg">₹3,281</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">1h 45</div>
+                    </div>
+                    <div class="flex-1 p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                        <div class="text-sm font-light text-gray-500 dark:text-gray-400">Fastest</div>
+                        <div class="font-bold text-lg">₹3,846</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">1h 15</div>
+                    </div>
+                    <div
+                        class="flex-none p-3 flex items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 px-6">
+                        <span class="font-medium mr-1">Sort</span>
+                        <span class="material-icons">arrow_drop_down</span>
+                    </div>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-6">
+                    <div class="flex-grow space-y-4">
+                        <!-- Result 1 -->
+                        <div class="bg-surface-light dark:bg-surface-dark rounded-lg shadow-sm hover:shadow-md transition border border-transparent hover:border-gray-200 dark:hover:border-gray-700 ai-flight-card"
+                            id="ai-result" data-airline="Air India Express" data-time="17:00" data-price="3426">
+                            <div class="p-4 md:p-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                                <div
+                                    class="flex-grow flex items-center justify-between w-full md:w-auto gap-4 md:gap-8">
+                                    <div class="w-20">
+                                        <div class="text-red-500 font-bold leading-tight">AIR INDIA<br />express</div>
+                                    </div>
+                                    <div class="flex-grow flex items-center gap-4 md:gap-8 text-center">
+                                        <div>
+                                            <div class="text-xl md:text-2xl font-normal">17:00</div>
+                                            <div class="text-sm text-gray-500 dark:text-gray-400">HYD</div>
+                                        </div>
+                                        <div class="flex flex-col items-center w-24">
+                                            <div class="text-xs text-gray-500 mb-1">1h 30</div>
+                                            <div
+                                                class="w-full h-[1px] bg-gray-300 dark:bg-gray-600 relative flex items-center justify-center">
+                                                <span
+                                                    class="material-icons text-gray-400 text-xs absolute rotate-90 bg-surface-light dark:bg-surface-dark px-1">flight</span>
+                                            </div>
+                                            <div class="text-xs text-green-600 dark:text-green-400 mt-1 font-medium">
+                                                Direct</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-xl md:text-2xl font-normal">18:30</div>
+                                            <div class="text-sm text-gray-500 dark:text-gray-400">BLR</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="flex flex-row md:flex-col items-center md:items-end justify-between w-full md:w-auto gap-2 border-t md:border-t-0 md:border-l border-gray-100 dark:border-gray-700 pt-4 md:pt-0 md:pl-6">
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 hidden md:block">13 deals from
+                                    </div>
+                                    <div class="text-2xl font-bold flex items-center gap-1">
+                                        ₹3,426
+                                    </div>
+                                    <button
+                                        class="bg-secondary hover:bg-opacity-90 text-white font-bold py-2 px-6 rounded-md flex items-center gap-1 mt-1 transition"
+                                        id="hold-btn">
+                                        Select <span class="material-icons text-sm">arrow_forward</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-gray-50 dark:bg-gray-800/50 px-4 py-2 rounded-b-lg text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                <span class="material-icons text-sm">eco</span>
+                                This flight emits <strong>9% less CO2e</strong> than a typical flight on this route
+                            </div>
+                        </div>
+                        <!-- Result 2 -->
+                        <div class="bg-surface-light dark:bg-surface-dark rounded-lg shadow-sm hover:shadow-md transition border border-transparent hover:border-gray-200 dark:hover:border-gray-700 indigo-flight-card"
+                            id="indigo-result">
+                            <div class="p-4 md:p-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                                <div
+                                    class="flex-grow flex items-center justify-between w-full md:w-auto gap-4 md:gap-8">
+                                    <div
+                                        class="w-20 bg-secondary px-2 py-1 rounded text-white text-center font-bold text-sm">
+                                        IndiGo
+                                    </div>
+                                    <div class="flex-grow flex items-center gap-4 md:gap-8 text-center">
+                                        <div>
+                                            <div class="text-xl md:text-2xl font-normal">23:00</div>
+                                            <div class="text-sm text-gray-500 dark:text-gray-400">HYD</div>
+                                        </div>
+                                        <div class="flex flex-col items-center w-24">
+                                            <div class="text-xs text-gray-500 mb-1">1h 20</div>
+                                            <div
+                                                class="w-full h-[1px] bg-gray-300 dark:bg-gray-600 relative flex items-center justify-center">
+                                                <span
+                                                    class="material-icons text-gray-400 text-xs absolute rotate-90 bg-surface-light dark:bg-surface-dark px-1">flight</span>
+                                            </div>
+                                            <div class="text-xs text-green-600 dark:text-green-400 mt-1 font-medium">
+                                                Direct</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-xl md:text-2xl font-normal">00:20</div>
+                                            <div class="text-sm text-gray-500 dark:text-gray-400">BLR</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="flex flex-row md:flex-col items-center md:items-end justify-between w-full md:w-auto gap-2 border-t md:border-t-0 md:border-l border-gray-100 dark:border-gray-700 pt-4 md:pt-0 md:pl-6">
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 hidden md:block">14 deals from
+                                    </div>
+                                    <div class="text-2xl font-bold">₹4,289</div>
+                                    <button
+                                        class="bg-secondary hover:bg-opacity-90 text-white font-bold py-2 px-6 rounded-md flex items-center gap-1 mt-1 transition">
+                                        Select <span class="material-icons text-sm">arrow_forward</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-gray-50 dark:bg-gray-800/50 px-4 py-2 rounded-b-lg text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                <span class="material-icons text-sm">eco</span>
+                                This flight emits <strong>9% less CO2e</strong> than a typical flight on this route
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="w-full lg:w-1/3 xl:w-1/4 hidden lg:block">
+                        <div
+                            class="bg-surface-light dark:bg-surface-dark rounded-lg shadow-sm p-6 text-center sticky top-4">
+                            <div class="flex justify-center -space-x-2 mb-4">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center font-bold z-30 ring-2 ring-white dark:ring-surface-dark">
+                                    B.</div>
+                                <div
+                                    class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold z-20 ring-2 ring-white dark:ring-surface-dark text-xs">
+                                    Trip.</div>
+                                <div
+                                    class="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center font-bold z-10 ring-2 ring-white dark:ring-surface-dark">
+                                    <span class="material-icons text-sm">apartment</span>
+                                </div>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2 leading-tight">Found flights? Now find a hotel</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">Get results from all the top hotel
+                                sites right here on Skyscanner.</p>
+                            <button
+                                class="bg-secondary text-white font-bold py-3 px-6 rounded-md w-full hover:bg-opacity-90 transition">
+                                Explore hotels
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <button class="fixed bottom-4 right-4 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 z-50"
+        onclick="document.documentElement.classList.toggle('dark')">
+        <span class="material-icons">dark_mode</span>
+    </button>
+
+    <!-- Hold Modal (Injected by System) -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-surface-dark rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold mb-4 dark:text-white">Confirm Hold?</h2>
+            <p class="text-gray-600 dark:text-gray-300 mb-6">We will block this seat for 24 hours. No immediate payment
+                required.</p>
+            <div class="flex gap-4">
+                <button onclick="document.getElementById('modal').classList.add('hidden')"
+                    class="flex-1 py-3 rounded-xl border border-gray-300 font-bold text-gray-700 hover:bg-gray-50">Cancel</button>
+                <a href="booking_held.html"
+                    class="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold text-center hover:bg-red-700 shadow-lg"
+                    id="confirm-hold-btn">Confirm</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Logic to open modal on Hold
+        const holdBtn = document.getElementById('hold-btn');
+
+        if (holdBtn) {
+            holdBtn.addEventListener('click', () => {
+                // Get price from the button's parent container or simply hardcode/extract the known Air India price
+                // The AI card has id="ai-result", let's get data-price
+                const aiCard = document.getElementById('ai-result');
+                let price = 3426;
+                if (aiCard) {
+                    price = aiCard.getAttribute('data-price') || 3426;
+                }
+
+                // Direct navigation to Booking Details with PRICE parameter
+                window.location.href = `booking_details.html?price=${price}`;
+            });
+        }
+    </script>
+
+</body>
+
+</html>
