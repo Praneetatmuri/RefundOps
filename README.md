@@ -14,23 +14,23 @@
 
 ## 📋 Overview
 
-**RefundOps** is an intelligent, AI-powered automation system designed to streamline flight refund processing for airlines. It monitors email inboxes for refund requests, extracts relevant flight information using Google's Gemini AI, and automatically processes refunds through airline portals using browser automation.
+**RefundOps** is an intelligent, AI-powered autonomous agent designed to transform flight disruptions into seamless rebooking experiences. It doesn't just process refunds; it orchestrates a complete recovery workflow. It monitors email inboxes for cancellation notices, extracts flight data with Gemini AI, executes airline refunds, and autonomously finds/holds the best alternative flights on Skyscanner-style interfaces.
 
 ### 🎯 Problem Statement
 
-Processing flight refunds manually is:
-- **Time-consuming**: Each refund takes 8-10 minutes of manual work
-- **Error-prone**: Human errors in data entry cause delays
-- **Expensive**: Requires dedicated staff for repetitive tasks
+Flight cancellations are a traveler's nightmare:
+- **Refund Friction**: Manual airline refund portals are confusing and slow.
+- **Rebooking Stress**: Finding a new flight under pressure is error-prone.
+- **Data Fragmentation**: Switching between emails, portals, and search engines wastes hours.
 
-### 💡 Our Solution
+### 💡 Our Solution: The "Refund ➡️ Rebook" Loop
 
-RefundOps automates the entire refund workflow:
-1. **Monitors** email inbox for refund requests
-2. **Extracts** PNR, airline, and customer details using AI
-3. **Routes** requests to the appropriate airline bot
-4. **Processes** refunds automatically through airline portals
-5. **Tracks** all processed refunds with statistics
+RefundOps automates the entire disruption recovery:
+1. **Monitors** inbox for cancellation alerts or refund requests.
+2. **Extracts** PNR, airline, and route details using Gemini AI.
+3. **Refunds** the original flight via automated interaction with airline portals.
+4. **Rebooks** by autonomously searching Skyscanner, analyzing options, and holding the best available seat.
+5. **Tracks** recovery stats (time saved, money recovered) in a real-time Command Center.
 
 ---
 
@@ -76,35 +76,36 @@ RefundOps automates the entire refund workflow:
 | File | Description |
 |------|-------------|
 | `main.py` | Core orchestrator - routes emails to appropriate airline bots |
-| `brain.py` | AI engine using Google Gemini 2.5 Flash for data extraction |
+| `brain.py` | AI engine using Google Gemini for data extraction |
 | `ears.py` | Email listener - monitors Gmail inbox via IMAP |
-| `bot.py` | Browser automation using Playwright for airline portals |
+| `bot.py` | Browser automation using Playwright (Refund ➡️ Rebook logic) |
 | `backend.py` | FastAPI server for authentication and process control |
 | `frontend.py` | Streamlit dashboard - Command Center UI |
-| `database.py` | SQLite database operations for users and statistics |
-| `config.py` | Runtime configuration (auto-generated on login) |
-| `indigo.html` | IndiGo Airlines mock portal for demo |
-| `airindia.html` | Air India mock portal for demo |
+| `database.py` | SQLite database for users, state, and statistics |
+| `rebooking.html` | Skyscanner search entry point |
+| `search_results.html` | Flight selection interface with dynamic pricing |
+| `booking_details.html` | Advanced seat selection and baggage module |
+| `booking_held.html` | High-fidelity confirmation page (Skyscanner branded) |
+| `indigo.html` | IndiGo Airlines mock portal for refund demo |
+| `airindia.html` | Air India mock portal for refund demo |
 
 ---
 
 ## ✨ Features
 
-### 🤖 AI-Powered Data Extraction
-- Uses **Google Gemini 2.5 Flash** model
-- Extracts PNR, airline name, and customer name from natural language emails
-- Returns structured JSON for processing
+### 🤖 Autonomous Rebooking Engine
+- **Heuristic Reasoning**: Analyzes multiple flight options to select the most "logical" alternative (e.g., earlier arrival vs. lower cost).
+- **Skyscanner Integration**: Leverages high-fidelity mock interfaces for searching and holding flights.
+- **Seat & Baggage Logic**: Automatically selects optimal seats (Best Seat / Aisle) and manages baggage selection.
 
-### 📧 Email Monitoring
-- Connects to Gmail via IMAP
-- Monitors for unread emails in real-time
-- Processes new refund requests automatically
+### 📧 Intelligent Monitoring
+- **AI Body Extraction**: Google Gemini handles complex email thread extractions.
+- **IMAP Listener**: Real-time monitoring of Gmail with robust plain-text and multipart support.
 
-### 🌐 Browser Automation
-- **Playwright** for reliable browser automation
-- Supports multiple airlines (IndiGo, Air India)
-- Fills forms, selects options, and submits requests automatically
-- Visual feedback (non-headless mode) for monitoring
+### 🌐 Human-Like Automation
+- **Playwright Core**: Reliable interaction with dynamic airline and search portals.
+- **Realistic Typing**: Simulates human speed with `press_sequentially` and focus management.
+- **Observability**: Strategically placed pauses for visual verification during demonstrations.
 
 ### 📊 Command Center Dashboard
 - **Modern glassmorphism UI** built with Streamlit
@@ -186,22 +187,23 @@ run_app.bat
 - Enter your credentials to access the Command Center
 
 ### 3. Start Monitoring
-- Click **"Start Agent"** to begin monitoring your inbox
-- The system will automatically process refund emails
+- Click **"Start Agent"** to begin monitoring your inbox.
+- The system will enter a "Listening" state, waiting for cancellation notices or refund requests.
 
 ### 4. Send Test Email
 - Send an email to your configured Gmail with content like:
   ```
-  Please process my refund. My PNR is ABC123 and I flew with IndiGo.
-  My name is John Doe.
+  My Air India flight got cancelled. PNR is AI456. My name is John Doe.
+  I was traveling from Hyderabad to Bengaluru.
   ```
 
-### 5. Watch the Magic
-- The bot will automatically:
-  - Extract the flight details
-  - Open the airline portal
-  - Fill in the refund form
-  - Submit the request
+### 5. Watch the Autonomous Loop
+- The bot will:
+  - **Extract**: Identify the airline, PNR, and travel route.
+  - **Refund**: Navigate to the airline portal and process the refund.
+  - **Analyze**: Search for the best alternative flights.
+  - **Optimize**: Apply seat and baggage preferences.
+  - **Confirm**: Secure the new booking on the Skyscanner-branded success page.
 
 ---
 
