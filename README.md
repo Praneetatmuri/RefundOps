@@ -97,21 +97,44 @@ RefundOps automates the entire disruption recovery:
 - **Heuristic Reasoning**: Analyzes multiple flight options to select the most "logical" alternative (e.g., earlier arrival vs. lower cost).
 - **Skyscanner Integration**: Leverages high-fidelity mock interfaces for searching and holding flights.
 - **Seat & Baggage Logic**: Automatically selects optimal seats (Best Seat / Aisle) and manages baggage selection.
+- **Dynamic Customer Data**: Uses actual passenger names extracted from emails (no hardcoded values).
 
 ### 📧 Intelligent Monitoring
-- **AI Body Extraction**: Google Gemini handles complex email thread extractions.
-- **IMAP Listener**: Real-time monitoring of Gmail with robust plain-text and multipart support.
+- **AI Body Extraction**: Google Gemini handles complex email thread extractions with retry logic.
+- **IMAP Listener**: Real-time monitoring of Gmail (2-second polling for demos).
+- **Error Recovery**: Robust error handling and automatic retries for AI extraction.
 
 ### 🌐 Human-Like Automation
 - **Playwright Core**: Reliable interaction with dynamic airline and search portals.
 - **Realistic Typing**: Simulates human speed with `press_sequentially` and focus management.
 - **Observability**: Strategically placed pauses for visual verification during demonstrations.
+- **Dynamic Form Filling**: Automatically populates passenger details from extracted data.
 
 ### 📊 Command Center Dashboard
 - **Modern glassmorphism UI** built with Streamlit
-- Real-time log streaming
+- Real-time log streaming with color coding
 - Statistics tracking (refunds processed, time saved, money saved)
+- **Enhanced Bot Status Display**: Animated loading indicators and progress updates
+- **Autonomous Agent Monitor**: Visual feedback for active processes
 - Start/Stop process control
+
+### 🎨 Polished User Interface
+- **Page Load Animations**: Smooth fade-in effects on all pages
+- **Interactive Hover Effects**: Cards and buttons respond to user interaction
+- **Dark Mode Support**: System-wide theme toggle with localStorage persistence
+- **Smooth Transitions**: Professional animations throughout the application
+- **Responsive Design**: Works seamlessly on desktop and mobile
+
+### 🔔 Smart Notifications
+- **📧 Email Confirmations**: Professional HTML emails sent after process completion
+  - Refund confirmation details
+  - New booking information
+  - Next steps and deadlines
+  - Time-saved statistics
+- **💬 Telegram Alerts** (Optional): Instant mobile notifications
+  - Real-time process updates
+  - Markdown-formatted messages
+  - 100% free (no SMS costs)
 
 ### 🔐 User Authentication
 - Secure signup/login system
@@ -151,7 +174,17 @@ RefundOps automates the entire disruption recovery:
    Create a `.env` file in the root directory:
    ```env
    GOOGLE_API_KEY=your_gemini_api_key_here
+   
+   # Optional: Telegram Notifications
+   TELEGRAM_BOT_TOKEN=your_bot_token_here
+   TELEGRAM_CHAT_ID=your_chat_id_here
    ```
+   
+   **For Telegram notifications (optional):**
+   1. Message `@BotFather` on Telegram, send `/newbot`
+   2. Copy your bot token
+   3. Message `@userinfobot` to get your Chat ID
+   4. Add both to `.env` file
 
 ### Running the Application
 

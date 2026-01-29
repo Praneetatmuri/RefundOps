@@ -401,19 +401,44 @@ else:
         st.markdown(f"""
         <div class="glass-card" style="border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.1);">
             <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="background: #3b82f6; padding: 10px; border-radius: 50%;">
-                    <span style="font-size: 24px;">🤖</span>
+                <div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); padding: 12px; border-radius: 12px; box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);">
+                    <span style="font-size: 28px;">🤖</span>
                 </div>
                 <div>
-                    <h3 style="margin: 0; color: #60a5fa;">Autonomous Agent Active</h3>
-                    <p style="margin: 0; color: #bfdbfe;">
-                        {status_msg}
+                    <h3 style="margin: 0; color: #60a5fa; font-size: 1.3rem;">Autonomous Agent Active</h3>
+                    <p style="margin: 5px 0 0 0; color: #bfdbfe; font-size: 0.95rem;">
+                        <span style="font-weight: 600;">Status:</span> {status_msg}
                     </p>
                 </div>
             </div>
-            <div style="margin-top: 10px;">
-                <div style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
-                    <div style="width: 100%; height: 100%; background: #60a5fa; animation: loading 1.5s infinite;"></div>
+            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Processing...</span>
+                    <span style="font-size: 0.75rem; color: #60a5fa;">⚡ AI Mode</span>
+                </div>
+                <div style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                    <div style="width: 100%; height: 100%; background: linear-gradient(90deg, #3b82f6, #60a5fa, #3b82f6); animation: loading 2s infinite; background-size: 200% 100%;"></div>
+                </div>
+            </div>
+        </div>
+        <style>
+            @keyframes loading {{
+                0% {{ background-position: 200% 0; }}
+                100% {{ background-position: 0% 0; }}
+            }}
+        </style>
+        """, unsafe_allow_html=True)
+    elif bot_state.get("status") == "COMPLETED":
+        payload = bot_state.get("payload", {})
+        st.markdown(f"""
+        <div class="glass-card" style="border: 2px solid #10b981; background: rgba(16, 185, 129, 0.1);">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 12px; border-radius: 12px;">
+                    <span style="font-size: 28px;">✅</span>
+                </div>
+                <div>
+                    <h3 style="margin: 0; color: #34d399;">Process Complete!</h3>
+                    <p style="margin: 5px 0 0 0; color: #6ee7b7;">{payload.get('status', 'Success')}</p>
                 </div>
             </div>
         </div>

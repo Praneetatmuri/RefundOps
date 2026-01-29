@@ -5,6 +5,152 @@ from playwright.sync_api import sync_playwright
 import database
 import backend
 import brain
+import smtplib
+import random
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from datetime import datetime
+
+# --- NOTIFICATION FUNCTIONS ---
+
+def send_confirmation_email(user_email, customer_name, airline, pnr, route, new_airline="Air India Express"):
+    """
+    Send confirmation email after successful refund & rebooking
+    """
+    try:
+        import config
+        import importlib
+        importlib.reload(config)
+        
+        sender_email = config.EMAIL_USER
+        sender_password = config.EMAIL_PASS
+        
+        # Create message
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = f"✅ Refund & Rebooking Complete - PNR: {pnr}"
+        msg['From'] = sender_email
+        msg['To'] = user_email
+        
+        # HTML email body
+        html_body = f"""
+        <html>
+          <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+              <h2 style="color: #10b981;">✅ Process Complete!</h2>
+              
+              <p>Dear <strong>{customer_name}</strong>,</p>
+              
+              <p>Great news! Your refund and rebooking process has been completed automatically.</p>
+              
+              <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #0770e3; margin-top: 0;">✅ REFUND CONFIRMED</h3>
+                <ul style="list-style: none; padding: 0;">
+                  <li>• <strong>Airline:</strong> {airline}</li>
+                  <li>• <strong>PNR:</strong> {pnr}</li>
+                  <li>• <strong>Status:</strong> Confirmed</li>
+                  <li>• <strong>Reference:</strong> REF-2025-{random.randint(1000, 9999)}</li>
+                </ul>
+              </div>
+              
+              <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #10b981; margin-top: 0;">✈️ NEW BOOKING</h3>
+                <ul style="list-style: none; padding: 0;">
+                  <li>• <strong>Airline:</strong> {new_airline}</li>
+                  <li>• <strong>Route:</strong> {route}</li>
+                  <li>• <strong>Departure:</strong> Wed, 1 Jan 2025 at 17:00</li>
+                  <li>• <strong>Seat:</strong> 1B (Premium)</li>
+                  <li>• <strong>Booking Ref:</strong> SKY-HOLD-888</li>
+                </ul>
+              </div>
+              
+              <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <h4 style="margin-top: 0;">⏰ Next Steps:</h4>
+                <ol>
+                  <li>Complete payment within 24 hours</li>
+                  <li>Check your email for the payment link</li>
+                  <li>Download your e-ticket after payment</li>
+                </ol>
+              </div>
+              
+              <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 0.9em; color: #666;">
+                <p><strong>Time Saved:</strong> ~45 minutes ⏱️</p>
+                <p><strong>Automation Rate:</strong> 100% 🤖</p>
+                <p style="margin-top: 20px;">Thank you for using <strong>RefundOps</strong>!</p>
+                <p style="font-size: 0.8em; color: #999;">Automated by RefundOps AI Agent • {datetime.now().strftime('%Y-%m-%d %H:%M')}</p>
+              </div>
+            </div>
+          </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html_body, 'html'))
+        
+        # Send email
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login(sender_email, sender_password)
+            server.send_message(msg)
+        
+        print(f"✅ Confirmation email sent to {user_email}", flush=True)
+        return True
+        
+    except Exception as e:
+        print(f"⚠️ Could not send confirmation email: {e}", flush=True)
+        return False
+
+
+def send_telegram_notification(customer_name, airline, pnr, route):
+    """
+    Send Telegram notification (optional - requires bot setup)
+    """
+    try:
+        # Check if Telegram is configured
+        telegram_token = os.getenv('TELEGRAM_BOT_TOKEN')
+        telegram_chat_id = os.getenv('TELEGRAM_CHAT_ID')
+        
+        if not telegram_token or not telegram_chat_id:
+            print("ℹ️ Telegram not configured (optional)", flush=True)
+            return False
+        
+        import requests
+        
+        message = f"""
+🤖 *RefundOps - Process Complete!*
+
+✅ *Refund Confirmed*
+   • Airline: {airline}
+   • PNR: {pnr}
+   • Status: Confirmed
+
+✈️ *New Booking*
+   • Flight: {route}
+   • Airline: Air India Express
+   • Time: 17:00 on Jan 1, 2025
+   • Seat: 1B (Premium)
+   • Ref: SKY-HOLD-888
+
+⏰ Payment due in 23h 59m
+
+_Automated by RefundOps AI Agent_
+        """
+        
+        url = f"https://api.telegram.org/bot{telegram_token}/sendMessage"
+        response = requests.post(url, json={
+            "chat_id": telegram_chat_id,
+            "text": message,
+            "parse_mode": "Markdown"
+        })
+        
+        if response.status_code == 200:
+            print("✅ Telegram notification sent", flush=True)
+            return True
+        else:
+            print(f"⚠️ Telegram error: {response.status_code}", flush=True)
+            return False
+            
+    except Exception as e:
+        print(f"ℹ️ Telegram notification skipped: {e}", flush=True)
+        return False
+
 
 # Disable browser automation restrictions for smoother simulation
 ARGS = [
@@ -126,7 +272,7 @@ def run_refund_process(page, airline_name, pnr_number, customer_name):
 
 
 # --- 2. REBOOKING PROCESS (Skyscanner) ---
-def run_rebooking_process(page, airline_name, pnr, origin, destination):
+def run_rebooking_process(page, airline_name, pnr, origin, destination, customer_name="User"):
     """
     Executes the rebooking search on the Skyscanner simulation.
     """
@@ -229,12 +375,23 @@ def run_rebooking_process(page, airline_name, pnr, origin, destination):
             
             time.sleep(1.5) # Time to see seat selection state change
             
-            # Passenger Details
+            # Passenger Details - Use actual customer name from email
+            print(f"Filling passenger details for: {customer_name}", flush=True)
             try:
-                page.locator("#first-name").press_sequentially("Praneet", delay=100)
-                page.locator("#last-name").press_sequentially("Atmuri", delay=100)
+                # Split customer name into first and last
+                name_parts = customer_name.strip().split()
+                first_name = name_parts[0] if len(name_parts) > 0 else "Passenger"
+                last_name = name_parts[-1] if len(name_parts) > 1 else "User"
+                
+                page.locator("#first-name").press_sequentially(first_name, delay=100)
+                page.locator("#last-name").press_sequentially(last_name, delay=100)
                 time.sleep(0.5)
-            except: pass
+            except Exception as e:
+                print(f"Could not auto-fill passenger details: {e}")
+                # Fallback
+                page.locator("#first-name").press_sequentially("Passenger", delay=100)
+                page.locator("#last-name").press_sequentially("User", delay=100)
+                time.sleep(0.5)
             
             # Submit Hold
             print("Clicking Hold & Pay...", flush=True)
@@ -260,20 +417,14 @@ def run_rebooking_process(page, airline_name, pnr, origin, destination):
 
             # Inject email into the success page dynamically
             try:
-                # Replace the hardcoded email or whatever is currently there in the specific strong tag
-                # We target the strong tag inside the container that has "Check your email"
-                target_script = f"""
-                const strongTags = document.querySelectorAll('strong');
-                for (const strong of strongTags) {{
-                    if (strong.innerText.includes('@') || strong.innerHTML.includes('@')) {{
-                        strong.innerText = '{user_email}';
-                    }}
-                }}
-                """
-                page.evaluate(target_script)
-                print(f"Updated confirmation email to {user_email}")
+                # Set via JavaScript global variable (picked up by page's own script)
+                page.evaluate(f"window.BOT_USER_EMAIL = '{user_email}';")
+                # Trigger the email update function
+                page.evaluate("if (typeof setUserEmail === 'function') setUserEmail();")
+                
+                print(f"✅ Email displayed: {user_email}", flush=True)
             except Exception as e:
-                print(f"Failed to update UI email: {e}")
+                print(f"Email injection warning: {e}")
 
             print("SUCCESS: Flight Held on Skyscanner!")
             
@@ -291,7 +442,7 @@ def run_rebooking_process(page, airline_name, pnr, origin, destination):
 
 
 # --- MAIN ORCHESTRATOR ---
-def autonomous_agent(airline_name, pnr, origin="Unknown", destination="Unknown"):
+def autonomous_agent(airline_name, pnr, origin="Unknown", destination="Unknown", customer_name="User"):
     start_time = time.time()
     
     with sync_playwright() as p:
@@ -303,12 +454,51 @@ def autonomous_agent(airline_name, pnr, origin="Unknown", destination="Unknown")
             # PHASE 1: REFUND (Airline Portal)
             # Only run if it's Indigo or Air India
             if airline_name in ["Indigo", "Air India"]:
-                run_refund_process(page, airline_name, pnr, "Praneet Atmuri")
+                run_refund_process(page, airline_name, pnr, customer_name)
                 time.sleep(1)
             
             # PHASE 2: REBOOK (Skyscanner)
             # We assume the refund logic detected a cancellation and triggered rebooking
-            run_rebooking_process(page, airline_name, pnr, origin, destination)
+            run_rebooking_process(page, airline_name, pnr, origin, destination, customer_name)
+            
+            # PHASE 3: SEND CONFIRMATIONS 📧
+            print("\n" + "="*60, flush=True)
+            print("📧 SENDING CONFIRMATIONS...", flush=True)
+            print("="*60, flush=True)
+            
+            try:
+                import config
+                import importlib
+                importlib.reload(config)
+                user_email = getattr(config, 'EMAIL_USER', 'user@example.com')
+                route = f"{origin} → {destination}"
+                
+                # Send Email Confirmation
+                email_sent = send_confirmation_email(
+                    user_email=user_email,
+                    customer_name=customer_name,
+                    airline=airline_name,
+                    pnr=pnr,
+                    route=route
+                )
+                
+                # Send Telegram Notification (optional)
+                telegram_sent = send_telegram_notification(
+                    customer_name=customer_name,
+                    airline=airline_name,
+                    pnr=pnr,
+                    route=route
+                )
+                
+                if email_sent:
+                    print(f"✅ Email confirmation sent to: {user_email}", flush=True)
+                if telegram_sent:
+                    print("✅ Telegram notification sent", flush=True)
+                    
+                print("="*60 + "\n", flush=True)
+                
+            except Exception as e:
+                print(f"⚠️ Notification error: {e}", flush=True)
             
         finally:
             print("Closing Session.")
@@ -317,10 +507,10 @@ def autonomous_agent(airline_name, pnr, origin="Unknown", destination="Unknown")
 
 # --- BACKWARD COMPATIBILITY ---
 def start_indigo_process(pnr, name, origin="Unknown", dest="Unknown"):
-    autonomous_agent("Indigo", pnr, origin, dest)
+    autonomous_agent("Indigo", pnr, origin, dest, name)
 
 def start_airindia_process(pnr, name, origin="Unknown", dest="Unknown"):
-    autonomous_agent("Air India", pnr, origin, dest)
+    autonomous_agent("Air India", pnr, origin, dest, name)
 
 if __name__ == "__main__":
     # Test directly

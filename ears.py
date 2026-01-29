@@ -58,12 +58,12 @@ def listen():
                                 # 3. TRIGGER THE AGENT
                                 main.process_refund_email(body)
             
-            # Sleep to prevent spamming Gmail
-            time.sleep(5)
+            # Sleep to prevent spamming Gmail (2 seconds for fast demo response)
+            time.sleep(2)
 
         except Exception as e:
             print(f"Connection Error: {e}", flush=True)
-            time.sleep(5)
+            time.sleep(2)
 
 if __name__ == "__main__":
     listen()
