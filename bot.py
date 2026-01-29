@@ -459,11 +459,15 @@ def autonomous_agent(airline_name, pnr, origin="Unknown", destination="Unknown",
             
             # PHASE 2: REBOOK (Skyscanner)
             # We assume the refund logic detected a cancellation and triggered rebooking
-            run_rebooking_process(page, airline_name, pnr, origin, destination, customer_name)
+            try:
+                run_rebooking_process(page, airline_name, pnr, origin, destination, customer_name)
+            except Exception as e:
+                print(f"[WARN] Rebooking Phase Warning: {e}")
             
-            # PHASE 3: SEND CONFIRMATIONS 📧
+            # PHASE 3: SEND CONFIRMATIONS
+            # Check if we should send email (assume if we got this far, we try)
             print("\n" + "="*60, flush=True)
-            print("📧 SENDING CONFIRMATIONS...", flush=True)
+            print("[INFO] SENDING CONFIRMATIONS...", flush=True)
             print("="*60, flush=True)
             
             try:
@@ -471,7 +475,7 @@ def autonomous_agent(airline_name, pnr, origin="Unknown", destination="Unknown",
                 import importlib
                 importlib.reload(config)
                 user_email = getattr(config, 'EMAIL_USER', 'user@example.com')
-                route = f"{origin} → {destination}"
+                route = f"{origin} -> {destination}"
                 
                 # Send Email Confirmation
                 email_sent = send_confirmation_email(
@@ -491,15 +495,18 @@ def autonomous_agent(airline_name, pnr, origin="Unknown", destination="Unknown",
                 )
                 
                 if email_sent:
-                    print(f"✅ Email confirmation sent to: {user_email}", flush=True)
+                    print(f"[OK] Email confirmation sent to: {user_email}", flush=True)
                 if telegram_sent:
-                    print("✅ Telegram notification sent", flush=True)
+                    print("[OK] Telegram notification sent", flush=True)
                     
                 print("="*60 + "\n", flush=True)
                 
             except Exception as e:
-                print(f"⚠️ Notification error: {e}", flush=True)
+                print(f"[WARN] Notification error: {e}", flush=True)
             
+        except Exception as e:
+            print(f"[ERROR] Critical Agent Error: {e}")
+
         finally:
             print("Closing Session.")
             time.sleep(5) # Pause so user can see the final 'Success' overlay
