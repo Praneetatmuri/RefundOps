@@ -27,11 +27,11 @@ def send_confirmation_email(user_email, customer_name, airline, pnr, route, new_
         
         # Create message
         msg = MIMEMultipart('alternative')
-        msg['Subject'] = f"✅ Refund & Rebooking Complete - PNR: {pnr}"
+        msg['Subject'] = f"Process Complete - PNR: {pnr}"
         msg['From'] = sender_email
         msg['To'] = user_email
         
-        # HTML email body
+        # HTML email body (Emojis are fine in HTML body, just not terminal output)
         html_body = f"""
         <html>
           <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
@@ -90,11 +90,11 @@ def send_confirmation_email(user_email, customer_name, airline, pnr, route, new_
             server.login(sender_email, sender_password)
             server.send_message(msg)
         
-        print(f"✅ Confirmation email sent to {user_email}", flush=True)
+        print(f"[OK] Confirmation email sent to {user_email}", flush=True)
         return True
         
     except Exception as e:
-        print(f"⚠️ Could not send confirmation email: {e}", flush=True)
+        print(f"[WARN] Could not send confirmation email: {e}", flush=True)
         return False
 
 
@@ -103,12 +103,15 @@ def send_telegram_notification(customer_name, airline, pnr, route):
     Send Telegram notification (optional - requires bot setup)
     """
     try:
+        from dotenv import load_dotenv
+        load_dotenv() # Load variables from .env
+        
         # Check if Telegram is configured
         telegram_token = os.getenv('TELEGRAM_BOT_TOKEN')
         telegram_chat_id = os.getenv('TELEGRAM_CHAT_ID')
         
         if not telegram_token or not telegram_chat_id:
-            print("ℹ️ Telegram not configured (optional)", flush=True)
+            print("[INFO] Telegram not configured (optional)", flush=True)
             return False
         
         import requests
@@ -141,14 +144,14 @@ _Automated by RefundOps AI Agent_
         })
         
         if response.status_code == 200:
-            print("✅ Telegram notification sent", flush=True)
+            print("[OK] Telegram notification sent", flush=True)
             return True
         else:
-            print(f"⚠️ Telegram error: {response.status_code}", flush=True)
+            print(f"[WARN] Telegram error: {response.status_code}", flush=True)
             return False
             
     except Exception as e:
-        print(f"ℹ️ Telegram notification skipped: {e}", flush=True)
+        print(f"[WARN] Telegram notification skipped: {e}", flush=True)
         return False
 
 
