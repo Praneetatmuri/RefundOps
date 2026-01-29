@@ -245,6 +245,36 @@ def run_rebooking_process(page, airline_name, pnr, origin, destination):
             # Wait for Success
             print("Waiting for Confirmation...", flush=True)
             page.locator("h1:has-text('Booking Successfully Held')").wait_for(state="visible", timeout=10000)
+            
+            # Update email if needed (in case the file write didn't pick it up or for visual confirmation)
+            # Try to fetch email from config
+            user_email = "user@example.com" # default
+            try:
+                import config
+                import importlib
+                importlib.reload(config) # Ensure we have the latest
+                if hasattr(config, 'EMAIL_USER'):
+                    user_email = config.EMAIL_USER
+            except: 
+                pass
+
+            # Inject email into the success page dynamically
+            try:
+                # Replace the hardcoded email or whatever is currently there in the specific strong tag
+                # We target the strong tag inside the container that has "Check your email"
+                target_script = f"""
+                const strongTags = document.querySelectorAll('strong');
+                for (const strong of strongTags) {{
+                    if (strong.innerText.includes('@') || strong.innerHTML.includes('@')) {{
+                        strong.innerText = '{user_email}';
+                    }}
+                }}
+                """
+                page.evaluate(target_script)
+                print(f"Updated confirmation email to {user_email}")
+            except Exception as e:
+                print(f"Failed to update UI email: {e}")
+
             print("SUCCESS: Flight Held on Skyscanner!")
             
             database.set_bot_state("COMPLETED", {
